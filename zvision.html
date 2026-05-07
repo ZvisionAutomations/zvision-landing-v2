@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zvision Automation — Processos Automatizados, Operação Escalável</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
+.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }
+.font-jetbrains { font-family: 'JetBrains Mono', monospace !important; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.animate-marquee { animation: marquee 28s linear infinite; display: flex; width: max-content; }
+@keyframes reveal { from { opacity: 0; transform: translateY(20px); filter: blur(8px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+.reveal-on-scroll { animation: reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-play-state: paused; }
+.reveal-on-scroll.is-visible { animation-play-state: running; }
+@keyframes progress-loop { 0%, 100% { width: 8%; } 50% { width: 75%; } }
+@keyframes barOutlineAnim { 0% { height: 0; opacity: 0; } 5% { height: 0; opacity: 1; } 20% { height: var(--h); opacity: 1; } 80% { height: var(--h); opacity: 1; } 90% { height: var(--h); opacity: 0; } 100% { height: 0; opacity: 0; } }
+@keyframes barFillAnim { 0%, 20% { height: 0; opacity: 1; } 40% { height: 100%; opacity: 1; } 75% { height: 100%; opacity: 1; } 85% { height: 100%; opacity: 0; } 100% { height: 0; opacity: 0; } }
+</style>
+</head>
+<body class="bg-[#050506] min-h-screen flex flex-col overflow-x-hidden selection:bg-[#A2E635]/30 selection:text-[#A2E635] text-white/70">
+
+<!-- ============================================================ BOOT SEQUENCE ============================================================ -->
+<style>
+  @keyframes zvScan { 0%{top:-3px} 100%{top:100%} }
+  @keyframes zvCursor { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+  @keyframes zvLogoGlow { 0%,100%{filter:drop-shadow(0 0 8px rgba(162,230,53,0))} 50%{filter:drop-shadow(0 0 16px rgba(162,230,53,0.4))} }
+  #zvOverlay { transition: opacity 1s cubic-bezier(0.4,0,0.2,1); }
+  @media (prefers-reduced-motion: reduce) { #zvOverlay { display: none !important; } }
+</style>
+
+<div id="zvOverlay" style="position:fixed;inset:0;z-index:9999;background:#050506;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;overflow:hidden;">
+
+  <!-- Scanline sweep -->
+  <div style="position:absolute;top:-3px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,rgba(162,230,53,0.12) 30%,rgba(162,230,53,0.25) 50%,rgba(162,230,53,0.12) 70%,transparent 100%);animation:zvScan 5s linear infinite;pointer-events:none;"></div>
+
+  <!-- Corner brackets — design system dashed -->
+  <div style="position:absolute;top:20px;left:20px;width:20px;height:20px;border-top:1px dashed rgba(255,255,255,0.12);border-left:1px dashed rgba(255,255,255,0.12);"></div>
+  <div style="position:absolute;top:20px;right:20px;width:20px;height:20px;border-top:1px dashed rgba(255,255,255,0.12);border-right:1px dashed rgba(255,255,255,0.12);"></div>
+  <div style="position:absolute;bottom:20px;left:20px;width:20px;height:20px;border-bottom:1px dashed rgba(255,255,255,0.12);border-left:1px dashed rgba(255,255,255,0.12);"></div>
+  <div style="position:absolute;bottom:20px;right:20px;width:20px;height:20px;border-bottom:1px dashed rgba(255,255,255,0.12);border-right:1px dashed rgba(255,255,255,0.12);"></div>
+
+  <!-- Logo -->
+  <div id="zvLogo" style="opacity:0;transform:translateY(-14px);transition:opacity 0.55s ease,transform 0.55s ease;text-align:center;margin-bottom:36px;">
+    <svg width="46" height="46" viewBox="0 0 2085 2085" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;animation:zvLogoGlow 3s ease-in-out infinite;">
+      <g fill="#A2E635">
+        <path d="M753.37 1579.84 c-27.49 -20.16 -59.86 -44.18 -72.28 -53.35 -12.22 -9.16 -56.20 -41.13 -97.73 -71.26 -41.33 -29.93 -76.56 -56.20 -77.78 -58.03 -2.04 -2.44 -2.65 -32.58 -2.65 -133.98 l0 -130.72 37.26 -27.28 c20.36 -15.27 99.36 -73.10 175.51 -128.89 76.15 -55.79 167.37 -122.58 202.60 -148.64 35.23 -25.86 70.04 -51.11 77.17 -55.99 18.33 -12.22 43.98 -23.82 66.99 -30.13 l19.75 -5.50 153.73 -0.41 c146.19 -0.61 153.52 -0.41 149.04 3.05 -2.65 1.83 -15.88 12.22 -29.52 23.01 -13.64 10.59 -27.49 21.18 -30.95 23.42 -5.90 3.67 -24.64 17.71 -63.73 47.44 -10.18 7.94 -19.14 14.46 -19.75 14.46 -0.61 0 -10.18 7.33 -21.18 16.29 -11.20 8.96 -21.18 16.29 -21.99 16.29 -0.81 0 -8.14 5.29 -16.09 11.81 -7.94 6.31 -19.55 15.27 -26.06 19.75 -6.31 4.48 -26.88 19.55 -45.41 33.60 -44.79 33.80 -61.69 46.42 -80.02 59.86 -8.35 6.11 -23.42 17.51 -33.60 25.25 -9.98 7.74 -24.03 18.12 -30.75 23.01 -6.92 4.89 -18.94 13.64 -26.47 19.55 -7.74 5.90 -19.34 14.66 -25.86 19.34 -6.31 4.89 -17.31 13.03 -24.43 18.33 -6.92 5.29 -15.88 12.01 -19.75 14.86 -3.87 3.05 -19.55 14.66 -34.61 26.06 -15.07 11.40 -28.91 21.79 -30.75 22.80 -4.07 2.44 -24.23 17.51 -47.65 35.63 -9.37 7.33 -20.36 15.47 -24.43 18.33 -4.07 2.85 -17.92 13.44 -31.15 23.42 -13.03 10.18 -28.51 21.58 -34.21 25.45 -8.55 5.90 -37.26 27.08 -78.59 58.44 -4.28 3.05 -11.20 8.14 -15.27 11.40 -4.28 3.05 -15.07 11.40 -24.23 18.33 -8.96 6.92 -21.58 16.09 -27.90 20.36 -6.31 4.28 -12.01 8.55 -12.62 9.57 -0.81 1.43 120.95 2.04 346.55 2.04 227.64 0 352.25 0.81 361.01 2.04 38.28 6.11 75.95 26.06 100.79 53.35 23.21 25.66 37.87 57.01 55.99 119.32 6.72 23.01 12.22 42.56 12.22 43.37 0 1.02 -130.72 1.83 -290.56 1.83 l-290.76 -0.20 -49.89 -36.65z"/>
+        <path d="M699.41 1345.88 c1.22 -1.83 82.26 -62.92 266.73 -200.56 40.32 -30.13 127.87 -95.49 194.45 -145.38 66.58 -49.68 151.90 -113.41 189.36 -141.31 37.46 -28.10 104.25 -77.98 148.43 -111.17 l80.43 -60.27 -357.34 -1.02 c-403.36 -1.22 -363.86 0.61 -401.93 -18.12 -43.17 -21.38 -72.08 -55.18 -90.81 -106.08 -10.79 -29.93 -28.10 -92.44 -26.06 -94.68 1.43 -1.43 100.99 -2.24 288.72 -2.65 l286.69 -0.61 58.84 43.17 c68.01 50.09 148.03 108.32 203.61 148.84 l38.89 28.10 1.43 19.14 c0.61 10.59 1.22 70.25 1.22 132.76 l-0.20 113.41 -5.90 5.50 c-3.46 3.26 -10.38 8.55 -15.68 12.01 -5.29 3.46 -15.47 11 -22.80 16.49 -7.33 5.70 -25.66 19.34 -40.32 30.13 -14.86 10.79 -29.32 21.58 -32.37 23.82 -3.05 2.24 -7.53 5.50 -10.18 7.13 -2.44 1.63 -8.55 6.11 -13.44 9.77 -4.89 3.67 -17.92 13.44 -29.12 21.79 -11.20 8.35 -23.62 17.51 -27.49 20.36 -3.87 3.05 -16.09 12.01 -26.88 19.95 -10.79 8.14 -22.19 16.49 -25.25 18.73 -2.85 2.24 -7.53 5.50 -9.98 7.13 -2.65 1.63 -13.44 9.77 -24.23 17.92 -10.59 7.94 -19.95 14.66 -20.77 14.66 -0.61 0 -8.14 5.50 -16.70 12.42 -8.35 6.72 -17.71 13.85 -20.56 15.68 -2.85 1.83 -9.37 6.52 -14.46 10.59 -5.09 4.07 -11.40 8.76 -14.25 10.59 -2.85 1.83 -9.98 6.92 -15.68 11.20 -5.90 4.28 -19.55 14.25 -30.34 21.99 -10.79 7.94 -26.27 19.55 -34.41 26.06 -8.14 6.31 -15.47 11.61 -16.29 11.61 -0.81 0 -5.09 3.26 -9.77 7.13 -4.48 3.87 -9.16 7.13 -10.18 7.13 -1.02 0 -6.52 3.26 -12.01 7.33 -12.22 8.55 -39.30 20.16 -61.69 25.86 -15.68 4.07 -22.40 4.28 -169.61 4.89 -106.49 0.61 -153.12 0.20 -152.10 -1.43z"/>
+      </g>
+    </svg>
+    <div style="font-family:'Space Grotesk',sans-serif;color:white;font-size:11px;letter-spacing:0.35em;text-transform:uppercase;font-weight:600;margin-top:12px;">ZVISION</div>
+    <div style="font-family:'Space Grotesk',sans-serif;color:rgba(255,255,255,0.22);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;margin-top:3px;">Automação Gerenciada por IA</div>
+  </div>
+
+  <!-- Terminal panel -->
+  <div style="border:1px dashed rgba(255,255,255,0.1);width:min(460px,88vw);background:rgba(255,255,255,0.015);">
+    <!-- Panel header -->
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px dashed rgba(255,255,255,0.07);">
+      <div style="width:6px;height:6px;border-radius:50%;background:#A2E635;animation:pulse 1.5s cubic-bezier(0.4,0,0.6,1) infinite;"></div>
+      <span style="font-size:9px;color:rgba(255,255,255,0.22);letter-spacing:0.14em;text-transform:uppercase;flex:1;">ZVISION OS — BOOT SEQUENCE</span>
+      <span id="zvClock" style="font-size:9px;color:rgba(255,255,255,0.18);font-variant-numeric:tabular-nums;letter-spacing:0.04em;"></span>
+    </div>
+    <!-- Output lines -->
+    <div id="zvLines" style="padding:14px 16px;min-height:104px;font-size:10px;line-height:1.95;"></div>
+    <!-- Progress footer -->
+    <div style="padding:10px 16px 14px;border-top:1px dashed rgba(255,255,255,0.05);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
+        <span style="font-size:9px;color:rgba(255,255,255,0.22);text-transform:uppercase;letter-spacing:0.12em;">Inicializando</span>
+        <span id="zvPct" style="font-size:9px;color:#A2E635;letter-spacing:0.06em;">0%</span>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);position:relative;overflow:hidden;">
+        <div id="zvBar" style="height:100%;background:#A2E635;width:0%;transition:width 0.45s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 8px rgba(162,230,53,0.55);"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var ov     = document.getElementById('zvOverlay');
+  var lines  = document.getElementById('zvLines');
+  var bar    = document.getElementById('zvBar');
+  var pct    = document.getElementById('zvPct');
+  var logo   = document.getElementById('zvLogo');
+  var clock  = document.getElementById('zvClock');
+
+  /* live clock */
+  function tick() {
+    clock.textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  }
+  tick();
+  var ti = setInterval(tick, 1000);
+
+  /* boot steps */
+  var steps = [
+    { ms: 260,  text: 'Verificando módulos do sistema...',       color: 'rgba(255,255,255,0.32)', p: 14 },
+    { ms: 520,  text: '[OK] Motor de IA — online',               color: '#A2E635',                p: 30 },
+    { ms: 780,  text: '[OK] Conexões com APIs — estabelecidas',  color: '#A2E635',                p: 50 },
+    { ms: 1040, text: '[OK] 34 processos ativos sincronizados',  color: '#A2E635',                p: 67 },
+    { ms: 1280, text: '[OK] Dashboard operacional — MAIO 2025',  color: '#A2E635',                p: 84 },
+    { ms: 1520, text: '[OK] Sistema pronto. Entrando...',        color: '#A2E635',                p: 100 },
+  ];
+
+  /* logo in */
+  setTimeout(function () {
+    logo.style.opacity   = '1';
+    logo.style.transform = 'translateY(0)';
+  }, 70);
+
+  /* render each line */
+  steps.forEach(function (s) {
+    setTimeout(function () {
+      var el = document.createElement('div');
+      el.style.cssText = 'opacity:0;transform:translateX(-5px);transition:opacity 0.22s ease,transform 0.22s ease;color:' + s.color + ';';
+      el.textContent = s.text;
+      lines.appendChild(el);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          el.style.opacity   = '1';
+          el.style.transform = 'translateX(0)';
+        });
+      });
+      bar.style.width    = s.p + '%';
+      pct.textContent    = s.p + '%';
+    }, s.ms);
+  });
+
+  /* exit */
+  var exitAt = steps[steps.length - 1].ms + 520;
+  setTimeout(function () {
+    clearInterval(ti);
+    ov.style.opacity = '0';
+    setTimeout(function () { ov.style.display = 'none'; }, 1000);
+  }, exitAt);
+}());
+</script>
+
+<!-- ============================================================ NAV ============================================================ -->
+<header class="border-dashed sticky z-50 bg-[#000000] w-full top-0 backdrop-blur-md border-b border-white/10">
+  <div class="grid grid-cols-12 h-16 sm:h-20">
+    <!-- Left Links -->
+    <div class="col-span-4 hidden md:flex items-center">
+      <a href="#" class="flex items-center justify-center hover:bg-white/10 transition-colors border-dashed text-xs font-medium text-white tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">SERVIÇOS</a>
+      <a href="#" class="flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">COMO FUNCIONA</a>
+      <a href="#" class="flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">PREÇOS</a>
+    </div>
+    <!-- Mobile Menu -->
+    <div class="col-span-2 md:hidden flex items-center pl-6 border-r border-dashed border-white/10 cursor-pointer" id="menuToggle" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-white"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+    </div>
+    <!-- Logo Center -->
+    <div class="col-span-8 md:col-span-4 flex relative items-center justify-center">
+      <a href="/" class="flex items-center gap-2.5">
+        <svg width="28" height="28" viewBox="0 0 2085 2085" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#A2E635">
+            <path d="M753.37 1579.84 c-27.49 -20.16 -59.86 -44.18 -72.28 -53.35 -12.22 -9.16 -56.20 -41.13 -97.73 -71.26 -41.33 -29.93 -76.56 -56.20 -77.78 -58.03 -2.04 -2.44 -2.65 -32.58 -2.65 -133.98 l0 -130.72 37.26 -27.28 c20.36 -15.27 99.36 -73.10 175.51 -128.89 76.15 -55.79 167.37 -122.58 202.60 -148.64 35.23 -25.86 70.04 -51.11 77.17 -55.99 18.33 -12.22 43.98 -23.82 66.99 -30.13 l19.75 -5.50 153.73 -0.41 c146.19 -0.61 153.52 -0.41 149.04 3.05 -2.65 1.83 -15.88 12.22 -29.52 23.01 -13.64 10.59 -27.49 21.18 -30.95 23.42 -5.90 3.67 -24.64 17.71 -63.73 47.44 -10.18 7.94 -19.14 14.46 -19.75 14.46 -0.61 0 -10.18 7.33 -21.18 16.29 -11.20 8.96 -21.18 16.29 -21.99 16.29 -0.81 0 -8.14 5.29 -16.09 11.81 -7.94 6.31 -19.55 15.27 -26.06 19.75 -6.31 4.48 -26.88 19.55 -45.41 33.60 -44.79 33.80 -61.69 46.42 -80.02 59.86 -8.35 6.11 -23.42 17.51 -33.60 25.25 -9.98 7.74 -24.03 18.12 -30.75 23.01 -6.92 4.89 -18.94 13.64 -26.47 19.55 -7.74 5.90 -19.34 14.66 -25.86 19.34 -6.31 4.89 -17.31 13.03 -24.43 18.33 -6.92 5.29 -15.88 12.01 -19.75 14.86 -3.87 3.05 -19.55 14.66 -34.61 26.06 -15.07 11.40 -28.91 21.79 -30.75 22.80 -4.07 2.44 -24.23 17.51 -47.65 35.63 -9.37 7.33 -20.36 15.47 -24.43 18.33 -4.07 2.85 -17.92 13.44 -31.15 23.42 -13.03 10.18 -28.51 21.58 -34.21 25.45 -8.55 5.90 -37.26 27.08 -78.59 58.44 -4.28 3.05 -11.20 8.14 -15.27 11.40 -4.28 3.05 -15.07 11.40 -24.23 18.33 -8.96 6.92 -21.58 16.09 -27.90 20.36 -6.31 4.28 -12.01 8.55 -12.62 9.57 -0.81 1.43 120.95 2.04 346.55 2.04 227.64 0 352.25 0.81 361.01 2.04 38.28 6.11 75.95 26.06 100.79 53.35 23.21 25.66 37.87 57.01 55.99 119.32 6.72 23.01 12.22 42.56 12.22 43.37 0 1.02 -130.72 1.83 -290.56 1.83 l-290.76 -0.20 -49.89 -36.65z"/>
+            <path d="M699.41 1345.88 c1.22 -1.83 82.26 -62.92 266.73 -200.56 40.32 -30.13 127.87 -95.49 194.45 -145.38 66.58 -49.68 151.90 -113.41 189.36 -141.31 37.46 -28.10 104.25 -77.98 148.43 -111.17 l80.43 -60.27 -357.34 -1.02 c-403.36 -1.22 -363.86 0.61 -401.93 -18.12 -43.17 -21.38 -72.08 -55.18 -90.81 -106.08 -10.79 -29.93 -28.10 -92.44 -26.06 -94.68 1.43 -1.43 100.99 -2.24 288.72 -2.65 l286.69 -0.61 58.84 43.17 c68.01 50.09 148.03 108.32 203.61 148.84 l38.89 28.10 1.43 19.14 c0.61 10.59 1.22 70.25 1.22 132.76 l-0.20 113.41 -5.90 5.50 c-3.46 3.26 -10.38 8.55 -15.68 12.01 -5.29 3.46 -15.47 11 -22.80 16.49 -7.33 5.70 -25.66 19.34 -40.32 30.13 -14.86 10.79 -29.32 21.58 -32.37 23.82 -3.05 2.24 -7.53 5.50 -10.18 7.13 -2.44 1.63 -8.55 6.11 -13.44 9.77 -4.89 3.67 -17.92 13.44 -29.12 21.79 -11.20 8.35 -23.62 17.51 -27.49 20.36 -3.87 3.05 -16.09 12.01 -26.88 19.95 -10.79 8.14 -22.19 16.49 -25.25 18.73 -2.85 2.24 -7.53 5.50 -9.98 7.13 -2.65 1.63 -13.44 9.77 -24.23 17.92 -10.59 7.94 -19.95 14.66 -20.77 14.66 -0.61 0 -8.14 5.50 -16.70 12.42 -8.35 6.72 -17.71 13.85 -20.56 15.68 -2.85 1.83 -9.37 6.52 -14.46 10.59 -5.09 4.07 -11.40 8.76 -14.25 10.59 -2.85 1.83 -9.98 6.92 -15.68 11.20 -5.90 4.28 -19.55 14.25 -30.34 21.99 -10.79 7.94 -26.27 19.55 -34.41 26.06 -8.14 6.31 -15.47 11.61 -16.29 11.61 -0.81 0 -5.09 3.26 -9.77 7.13 -4.48 3.87 -9.16 7.13 -10.18 7.13 -1.02 0 -6.52 3.26 -12.01 7.33 -12.22 8.55 -39.30 20.16 -61.69 25.86 -15.68 4.07 -22.40 4.28 -169.61 4.89 -106.49 0.61 -153.12 0.20 -152.10 -1.43z"/>
+          </g>
+        </svg>
+        <span class="text-white font-semibold text-sm tracking-widest font-space-grotesk uppercase">Zvision</span>
+      </a>
+    </div>
+    <!-- Right Links + CTA -->
+    <div class="col-span-2 md:col-span-4 flex items-center justify-end">
+      <a href="#" class="hidden md:flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r border-l pr-8 pl-8">CASOS DE USO</a>
+      <a href="#" class="hidden md:flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">SOBRE</a>
+      <a href="mailto:zvisionforb2b@gmail.com" class="md:w-auto flex items-center justify-center hover:text-[#A2E635] transition-colors gap-2 text-xs font-medium text-white tracking-wide font-space-grotesk w-full h-full pr-8 pl-8">
+        FALAR COM ESPECIALISTA
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================================================ HERO ============================================================ -->
+<section class="border-dashed bg-[#050506] border-white/10 border-b pt-24 pb-16 overflow-hidden relative">
+  <!-- Glow -->
+  <div class="absolute -top-12 left-1/4 w-[500px] h-[300px] bg-[#A2E635]/5 blur-[120px] pointer-events-none" aria-hidden="true"></div>
+  <div class="max-w-6xl mx-auto w-full px-6">
+    <div class="grid grid-cols-12 gap-8 items-start">
+      <!-- Left: Copy -->
+      <div class="col-span-12 md:col-span-7 pt-8">
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 mb-8 reveal-on-scroll is-visible">
+          <span class="text-[#A2E635] font-jetbrains text-xs tracking-widest uppercase border border-[#A2E635]/20 bg-[#A2E635]/5 px-3 py-1 rounded-sm">
+            Automação Gerenciada por IA
+          </span>
+        </div>
+        <!-- H1 -->
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl text-white leading-[1.1] mb-8 font-space-grotesk font-light tracking-tighter reveal-on-scroll is-visible">
+          Sua operação<br>
+          <span class="font-space-grotesk font-light tracking-tighter text-white/40">trabalhando</span><br>
+          sem parar.
+        </h1>
+        <!-- Subtitle -->
+        <p class="text-lg sm:text-xl leading-relaxed max-w-lg mb-12 font-light font-space-grotesk text-white/80 reveal-on-scroll is-visible">
+          Mapeamos, implementamos e gerenciamos automações de IA nos seus processos internos — para que sua equipe opere com mais resultado e menos esforço.
+        </p>
+        <!-- CTAs -->
+        <div class="flex flex-col sm:flex-row gap-4 reveal-on-scroll is-visible">
+          <a href="mailto:zvisionforb2b@gmail.com" class="inline-flex items-center justify-center gap-2 bg-[#A2E635] text-black font-medium font-space-grotesk text-sm tracking-wide px-6 py-3 hover:bg-[#A2E635]/90 transition-colors">
+            Solicitar Diagnóstico
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </a>
+          <a href="#processo" class="inline-flex items-center justify-center gap-2 border border-white/20 text-white font-medium font-space-grotesk text-sm tracking-wide px-6 py-3 hover:border-white/50 hover:bg-white/5 transition-colors">
+            Ver como funciona
+          </a>
+        </div>
+      </div>
+      <!-- Right: Dashboard Widget -->
+      <div class="col-span-12 md:col-span-5 reveal-on-scroll is-visible">
+        <div class="border border-dashed border-white/10 bg-[#0d0d10] overflow-hidden">
+          <!-- Widget Header -->
+          <div class="flex items-center justify-between px-4 py-3 border-b border-dashed border-white/10">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-[#A2E635] animate-pulse"></div>
+              <span class="text-xs font-space-grotesk text-white/60 tracking-wide">PAINEL AO VIVO</span>
+            </div>
+            <span class="text-xs font-jetbrains text-white/30">MAIO 2025</span>
+          </div>
+          <!-- Main Metric -->
+          <div class="px-6 pt-6 pb-4 border-b border-dashed border-white/5">
+            <p class="text-xs font-space-grotesk text-white/40 uppercase tracking-widest mb-2">Economia Operacional</p>
+            <div class="text-4xl font-light text-white tracking-tighter font-space-grotesk mb-1">R$ 148.200</div>
+            <div class="flex items-center gap-2">
+              <span class="text-[#A2E635] text-xs font-jetbrains">+23,6%</span>
+              <span class="text-white/40 text-xs font-space-grotesk">vs. mês anterior</span>
+            </div>
+          </div>
+          <!-- Stats Row -->
+          <div class="grid grid-cols-2 divide-x divide-dashed divide-white/5">
+            <div class="px-4 py-4">
+              <p class="text-xs font-space-grotesk text-white/40 mb-1">Processos Ativos</p>
+              <p class="text-xl font-light text-white font-space-grotesk tracking-tighter">34</p>
+              <p class="text-xs font-jetbrains text-[#A2E635]/70">+6 este mês</p>
+            </div>
+            <div class="px-4 py-4">
+              <p class="text-xs font-space-grotesk text-white/40 mb-1">Horas Economizadas</p>
+              <p class="text-xl font-light text-white font-space-grotesk tracking-tighter">280h</p>
+              <p class="text-xs font-jetbrains text-[#A2E635]/70">este mês</p>
+            </div>
+          </div>
+          <!-- Progress bars -->
+          <div class="px-4 py-4 space-y-3 border-t border-dashed border-white/5">
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <span class="text-[10px] font-space-grotesk text-white/50 uppercase tracking-wide">Atendimento</span>
+                <span class="text-[10px] font-jetbrains text-white/30">ATIVO</span>
+              </div>
+              <div class="h-[2px] w-full bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full bg-[#A2E635]" style="width: 78%; animation: progress-loop 5s ease-in-out infinite;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <span class="text-[10px] font-space-grotesk text-white/50 uppercase tracking-wide">CRM / Vendas</span>
+                <span class="text-[10px] font-jetbrains text-white/30">SINCRONIZANDO</span>
+              </div>
+              <div class="h-[2px] w-full bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full bg-white/40" style="width: 62%; animation: progress-loop 4s ease-in-out infinite; animation-delay: 0.5s;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <span class="text-[10px] font-space-grotesk text-white/50 uppercase tracking-wide">Relatórios</span>
+                <span class="text-[10px] font-jetbrains text-white/30">GERANDO</span>
+              </div>
+              <div class="h-[2px] w-full bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full bg-white/20" style="width: 45%; animation: progress-loop 6s ease-in-out infinite; animation-delay: 1s;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MARQUEE ============================================================ -->
+<section class="border-dashed bg-[#050506] border-white/10 border-b py-5 overflow-hidden">
+  <div class="flex items-center gap-6 overflow-hidden">
+    <!-- Label -->
+    <div class="hidden sm:flex items-center flex-shrink-0 pl-6 border-r border-dashed border-white/10 pr-6 h-full">
+      <span class="text-xs font-jetbrains text-white/30 tracking-widest uppercase whitespace-nowrap">OPERAÇÕES QUE JÁ AUTOMATIZAMOS</span>
+    </div>
+    <!-- Ticker -->
+    <div class="overflow-hidden flex-1">
+      <div class="animate-marquee">
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Nexora</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Stratify</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Caldwell Group</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Orbita Systems</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Plenix</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Verant Capital</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <!-- duplicate for seamless loop -->
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Nexora</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Stratify</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Caldwell Group</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Orbita Systems</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Plenix</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Verant Capital</span>
+        <span class="text-[#A2E635]/40 text-xs">·</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SECTION 01 - PLATAFORMA ============================================================ -->
+<section class="border-dashed bg-[#050506] border-white/10 border-b pt-24 pb-0">
+  <div class="max-w-6xl mx-auto px-6 mb-16">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-8 relative">
+      <div class="max-w-2xl">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="uppercase text-xs font-semibold text-[#A2E635] tracking-widest font-space-grotesk">01. Plataforma</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl lg:text-6xl text-white font-light tracking-tighter mb-4 font-space-grotesk leading-[1.1] reveal-on-scroll">
+          Inteligência aplicada à operação.
+        </h2>
+        <p class="text-lg font-space-grotesk max-w-md text-white/70 reveal-on-scroll">
+          Cada processo mapeado vira um ativo. Diagnóstico, implementação e gestão contínua — um sistema que aprende com a sua operação e entrega resultado mensurável, sem depender de intervenção manual.
+        </p>
+      </div>
+      <div class="flex flex-col gap-3">
+        <a href="#" class="group flex items-center gap-2 text-white/70 font-space-grotesk hover:text-[#A2E635] transition-colors text-sm reveal-on-scroll">
+          Ver nossa metodologia
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg>
+        </a>
+        <a href="#" class="group flex items-center gap-2 text-white/70 font-space-grotesk hover:text-[#A2E635] transition-colors text-sm reveal-on-scroll">
+          Explorar os serviços
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature Cards Grid -->
+  <div class="max-w-6xl mx-auto border border-dashed border-white/10">
+    <!-- Top Row: 4 Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-12">
+      <!-- Card 1 -->
+      <div class="group col-span-12 md:col-span-3 border-b border-dashed border-white/10 md:border-r p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#A2E635]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="mb-4">
+          <span class="text-[10px] font-jetbrains text-[#A2E635]/70 tracking-widest uppercase">Análise de Processos</span>
+        </div>
+        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk tracking-tight reveal-on-scroll">
+          Mapeamos antes de automatizar.
+        </h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+          Auditamos os fluxos operacionais da sua empresa e identificamos exatamente onde há perda de tempo, retrabalho e custo desnecessário. Nenhuma implementação começa sem dados.
+        </p>
+        <div class="mt-6 w-8 h-8 rounded bg-[#A2E635]/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A2E635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="group col-span-12 md:col-span-3 border-b border-dashed border-white/10 md:border-r p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#A2E635]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="mb-4">
+          <span class="text-[10px] font-jetbrains text-[#A2E635]/70 tracking-widest uppercase">Implementação</span>
+        </div>
+        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk tracking-tight reveal-on-scroll">
+          Sistemas que entram em produção.
+        </h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+          Construímos e configuramos as automações diretamente no seu ambiente — chatbots, CRM, integrações e fluxos de trabalho. Entregamos operando, não em fase de testes.
+        </p>
+        <div class="mt-6 w-8 h-8 rounded bg-[#A2E635]/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A2E635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="group col-span-12 md:col-span-3 border-b border-dashed border-white/10 md:border-r p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#A2E635]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="mb-4">
+          <span class="text-[10px] font-jetbrains text-[#A2E635]/70 tracking-widest uppercase">Integração de Sistemas</span>
+        </div>
+        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk tracking-tight reveal-on-scroll">
+          Seus dados, conectados e fluindo.
+        </h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+          Conectamos plataformas, APIs e ferramentas que hoje funcionam de forma isolada. O dado certo chega no lugar certo, no momento certo — sem intervenção humana no meio do caminho.
+        </p>
+        <div class="mt-6 w-8 h-8 rounded bg-[#A2E635]/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A2E635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="group col-span-12 md:col-span-3 border-b border-dashed border-white/10 p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#A2E635]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="mb-4">
+          <span class="text-[10px] font-jetbrains text-[#A2E635]/70 tracking-widest uppercase">Gestão Mensal</span>
+        </div>
+        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk tracking-tight reveal-on-scroll">
+          Gerenciamos o que implementamos.
+        </h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+          Ficamos ativos nas suas automações — monitoramento, ajustes, otimizações e suporte técnico contínuo. A diferença entre uma ferramenta que para de funcionar e um sistema que evolui com o negócio.
+        </p>
+        <div class="mt-6 w-8 h-8 rounded bg-[#A2E635]/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A2E635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"></path></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Row: Dashboard Mockup + Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-12">
+      <!-- Dashboard Mockup -->
+      <div class="col-span-12 md:col-span-8 md:border-r border-b border-dashed border-white/10 relative overflow-hidden reveal-on-scroll min-h-[260px] md:min-h-[420px]">
+        <div class="p-8 pb-0 relative z-10">
+          <!-- Dashboard Header -->
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <p class="text-xs font-jetbrains text-white/30 uppercase tracking-widest mb-1">Painel de Performance Operacional</p>
+              <p class="text-white font-space-grotesk font-medium">Maio 2025</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full bg-[#A2E635] animate-pulse"></div>
+              <span class="text-xs font-jetbrains text-[#A2E635]/70">AO VIVO</span>
+            </div>
+          </div>
+          <!-- Dashboard Grid -->
+          <div class="flex flex-col md:grid md:grid-cols-12 gap-px bg-white/5 border border-dashed border-white/10">
+            <!-- Sidebar -->
+            <div class="hidden md:flex md:col-span-3 bg-[#050506] p-4 flex-col gap-1">
+              <div class="flex items-center gap-2 px-2 py-1.5 bg-[#A2E635]/10 border border-[#A2E635]/20 rounded-sm cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A2E635" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span class="text-[9px] font-space-grotesk text-[#A2E635] uppercase tracking-wide">Visão Geral</span>
+              </div>
+              <div class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-white/5 rounded-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-500"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>
+                <span class="text-[9px] font-space-grotesk text-slate-500 uppercase tracking-wide">Automações</span>
+              </div>
+              <div class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-white/5 rounded-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-500"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
+                <span class="text-[9px] font-space-grotesk text-slate-500 uppercase tracking-wide">Integrações</span>
+              </div>
+              <div class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-white/5 rounded-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-500"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                <span class="text-[9px] font-space-grotesk text-slate-500 uppercase tracking-wide">Relatórios</span>
+              </div>
+              <div class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-white/5 rounded-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-500"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                <span class="text-[9px] font-space-grotesk text-slate-500 uppercase tracking-wide">Alertas</span>
+              </div>
+              <div class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-white/5 rounded-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-500"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <span class="text-[9px] font-space-grotesk text-slate-500 uppercase tracking-wide">Config.</span>
+              </div>
+            </div>
+            <!-- Main Content -->
+            <div class="md:col-span-9 bg-[#0d0d10] p-4">
+              <!-- KPI Row -->
+              <div class="grid grid-cols-3 gap-px mb-4 bg-white/5">
+                <div class="bg-[#0d0d10] p-3">
+                  <p class="text-[9px] font-space-grotesk text-white/30 uppercase mb-1">Automações ativas</p>
+                  <p class="text-lg font-light text-white font-space-grotesk">34</p>
+                </div>
+                <div class="bg-[#0d0d10] p-3">
+                  <p class="text-[9px] font-space-grotesk text-white/30 uppercase mb-1">Execuções hoje</p>
+                  <p class="text-lg font-light text-white font-space-grotesk">2.847</p>
+                </div>
+                <div class="bg-[#0d0d10] p-3">
+                  <p class="text-[9px] font-space-grotesk text-white/30 uppercase mb-1">Taxa de sucesso</p>
+                  <p class="text-lg font-light text-[#A2E635] font-space-grotesk">99,2%</p>
+                </div>
+              </div>
+              <!-- Bar Chart -->
+              <div class="flex gap-[3px] items-end h-[100px] pr-2">
+                <div class="flex-1 relative border-t border-l border-r border-dashed border-white/10" style="--h: 35%; animation: barOutlineAnim 6s ease-in-out infinite;">
+                  <div class="absolute bottom-0 left-0 w-full bg-white/[0.03]" style="animation: barFillAnim 6s ease-in-out infinite;"></div>
+                </div>
+                <div class="flex-1 relative border-t border-l border-r border-dashed border-white/10" style="--h: 55%; animation: barOutlineAnim 6s 0.1s ease-in-out infinite;">
+                  <div class="absolute bottom-0 left-0 w-full bg-white/[0.03]" style="animation: barFillAnim 6s 0.1s ease-in-out infinite;"></div>
+                </div>
+                <div class="flex-1 relative border-t border-l border-r border-dashed border-white/10" style="--h: 45%; animation: barOutlineAnim 6s 0.2s ease-in-out infinite;">
+                  <div class="absolute bottom-0 left-0 w-full bg-white/[0.03]" style="animation: barFillAnim 6s 0.2s ease-in-out infinite;"></div>
+                </div>
+                <div class="flex-1 relative border-t border-l border-r border-dashed border-[#A2E635]/30" style="--h: 80%; animation: barOutlineAnim 6s 0.3s ease-in-out infinite;">
+                  <div class="absolute bottom-0 left-0 w-full bg-[#A2E635]/5" style="animation: barFillAnim 6s 0.3s ease-in-out infinite;"></div>
+                </div>
+                <div class="flex-1 relative border-t border-l border-r border-dashed border-white/10" style="--h: 65%; animation: barOutlineAnim 6s 0.4s ease-in-out infinite;">
+                  <div class="absolute bottom-0 left-0 w-full bg-white/[0.03]" style="animation: barFillAnim 6s 0.4s ease-in-out infinite;"></div>
+                </div>
+                <div class="flex-1 relative border-t border-l border-r border-dashed border-white/10" style="--h: 50%; animation: barOutlineAnim 6s 0.5s ease-in-out infinite;">
+                  <div class="absolute bottom-0 left-0 w-full bg-white/[0.03]" style="animation: barFillAnim 6s 0.5s ease-in-out infinite;"></div>
+                </div>
+                <div class="flex-1 relative border-t border-l border-r border-dashed border-white/10" style="--h: 70%; animation: barOutlineAnim 6s 0.6s ease-in-out infinite;">
+                  <div class="absolute bottom-0 left-0 w-full bg-white/[0.03]" style="animation: barFillAnim 6s 0.6s ease-in-out infinite;"></div>
+                </div>
+              </div>
+              <div class="flex justify-between mt-1.5">
+                <span class="text-[8px] font-jetbrains text-white/20">Seg</span>
+                <span class="text-[8px] font-jetbrains text-white/20">Ter</span>
+                <span class="text-[8px] font-jetbrains text-white/20">Qua</span>
+                <span class="text-[8px] font-jetbrains text-[#A2E635]/50">Qui</span>
+                <span class="text-[8px] font-jetbrains text-white/20">Sex</span>
+                <span class="text-[8px] font-jetbrains text-white/20">Sáb</span>
+                <span class="text-[8px] font-jetbrains text-white/20">Dom</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Side -->
+      <div class="col-span-12 md:col-span-4 flex flex-col">
+        <div class="p-8 flex-1 border-b border-dashed border-white/10 reveal-on-scroll">
+          <div class="text-[56px] leading-none font-light text-[#A2E635] tracking-tighter font-space-grotesk mb-2">
+            280h
+          </div>
+          <h3 class="text-white font-medium text-sm mb-2 uppercase tracking-wide font-space-grotesk reveal-on-scroll">
+            Horas Economizadas / Mês
+          </h3>
+          <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+            Processos automatizados entregam mais resultado com menos intervenção humana. Cada hora recuperada é reinvestida em crescimento.
+          </p>
+        </div>
+        <div class="p-8 flex flex-col justify-end reveal-on-scroll">
+          <h3 class="text-white font-medium text-sm mb-2 uppercase tracking-wide font-space-grotesk reveal-on-scroll">
+            Integrações Nativas
+          </h3>
+          <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+            Conectamos ao CRM, ERP, WhatsApp, e-mail, planilhas e qualquer API — sem migrar o que você já usa.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SECTION 02 - PROCESSO ============================================================ -->
+<section id="processo" class="border-dashed bg-[#050506] border-white/10 border-b pt-24 pb-24">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="mb-16 relative">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-8 z-10 relative">
+        <div class="max-w-2xl">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="uppercase text-xs font-semibold text-[#A2E635] tracking-widest font-space-grotesk">02. Processo</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl lg:text-6xl text-white font-light tracking-tighter mb-4 font-space-grotesk leading-[1.1] reveal-on-scroll">
+            Do diagnóstico à operação automatizada.
+          </h2>
+        </div>
+      </div>
+      <div class="mt-12 h-[1px] w-full bg-gradient-to-r from-white/10 via-white/5 to-transparent"></div>
+    </div>
+
+    <!-- Steps Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-px bg-white/5 border border-dashed border-white/10">
+      <!-- Step 1 -->
+      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative reveal-on-scroll">
+        <div class="mb-6">
+          <span class="text-xs font-jetbrains text-white/20 tracking-widest">01</span>
+        </div>
+        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk reveal-on-scroll">Diagnóstico</h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+          Auditamos seus processos internos em até 5 dias úteis. Identificamos os gargalos com maior impacto em custo e tempo — e apresentamos um plano de automação com ROI estimado.
+        </p>
+        <div class="mt-8 w-full h-px bg-gradient-to-r from-[#A2E635]/30 to-transparent"></div>
+      </div>
+      <!-- Step 2 -->
+      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative reveal-on-scroll">
+        <div class="mb-6">
+          <span class="text-xs font-jetbrains text-white/20 tracking-widest">02</span>
+        </div>
+        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk reveal-on-scroll">Proposta e Escopo</h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+          Definimos junto com você quais processos automatizar primeiro, as ferramentas envolvidas e os entregáveis de cada fase. Sem surpresas no meio do caminho.
+        </p>
+        <div class="mt-8 w-full h-px bg-gradient-to-r from-[#A2E635]/20 to-transparent"></div>
+      </div>
+      <!-- Step 3 -->
+      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative reveal-on-scroll">
+        <div class="mb-6">
+          <span class="text-xs font-jetbrains text-white/20 tracking-widest">03</span>
+        </div>
+        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk reveal-on-scroll">Implementação</h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+          Construímos e configuramos as automações no seu ambiente real. Integramos com os sistemas que você já usa — sem migração, sem substituição de ferramenta.
+        </p>
+        <div class="mt-8 w-full h-px bg-gradient-to-r from-[#A2E635]/15 to-transparent"></div>
+      </div>
+      <!-- Step 4 -->
+      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative reveal-on-scroll">
+        <div class="mb-6">
+          <span class="text-xs font-jetbrains text-white/20 tracking-widest">04</span>
+        </div>
+        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk reveal-on-scroll">Gestão Contínua</h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+          Após a entrega, ficamos ativos. Monitoramos, ajustamos e expandimos as automações mensalmente — garantindo que o sistema opere no nível de desempenho esperado.
+        </p>
+        <div class="mt-8 w-full h-px bg-gradient-to-r from-[#A2E635]/10 to-transparent"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ PRICING ============================================================ -->
+<section class="border-dashed bg-[#050506] border-white/10 border-b pt-24 pb-24">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="mb-16">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="uppercase text-xs font-semibold text-[#A2E635] tracking-widest font-space-grotesk">04. Preços</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl text-white font-light tracking-tighter font-space-grotesk reveal-on-scroll">
+        Retainer mensal. Sem surpresas.
+      </h2>
+      <p class="text-lg font-space-grotesk text-white/50 mt-4 max-w-lg reveal-on-scroll">
+        Todos os planos incluem diagnóstico inicial, implementação e gestão contínua. A taxa de setup é cobrada uma única vez.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10 border border-dashed border-white/10">
+      <!-- Plan 1 -->
+      <div class="group bg-[#050506] p-8 flex flex-col hover:bg-white/[0.02] transition-colors reveal-on-scroll">
+        <div class="mb-6">
+          <h3 class="text-white font-medium text-sm uppercase tracking-wider font-space-grotesk mb-1">Essencial</h3>
+          <p class="text-white/40 text-xs font-space-grotesk">Para equipes que estão começando a automatizar</p>
+        </div>
+        <div class="mb-6">
+          <div class="flex items-baseline gap-1">
+            <span class="text-3xl font-light text-white font-space-grotesk tracking-tighter">R$ 500</span>
+            <span class="text-white/40 text-sm font-space-grotesk">/mês</span>
+          </div>
+          <p class="text-white/30 text-xs font-jetbrains mt-1">+ taxa de setup</p>
+        </div>
+        <a href="mailto:zvisionforb2b@gmail.com" class="w-full border border-white/20 text-white text-center py-3 text-sm font-medium font-space-grotesk hover:border-white/50 hover:bg-white/5 transition-colors mb-8">
+          Solicitar proposta
+        </a>
+        <div class="h-px w-full bg-white/10 mb-6"></div>
+        <ul class="flex flex-col gap-3 mt-auto">
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/60 text-sm font-space-grotesk font-light">Diagnóstico de processos incluso</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/60 text-sm font-space-grotesk font-light">1 automação implementada</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/30 flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/30 text-sm font-space-grotesk font-light">Gestão e monitoramento mensal</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/30 flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/30 text-sm font-space-grotesk font-light">Suporte via e-mail</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Plan 2 - Popular -->
+      <div class="group bg-[#050506] p-8 flex flex-col relative hover:bg-white/[0.02] transition-colors reveal-on-scroll border-l border-r border-dashed border-[#A2E635]/20">
+        <div class="absolute top-0 left-0 right-0 h-px bg-[#A2E635]"></div>
+        <div class="mb-6">
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="text-white font-medium text-sm uppercase tracking-wider font-space-grotesk">Profissional</h3>
+            <span class="text-[9px] font-jetbrains text-black bg-[#A2E635] px-2 py-0.5 uppercase tracking-wider">Mais popular</span>
+          </div>
+          <p class="text-white/40 text-xs font-space-grotesk">Para operações em crescimento que precisam de mais automação</p>
+        </div>
+        <div class="mb-6">
+          <div class="flex items-baseline gap-1">
+            <span class="text-3xl font-light text-white font-space-grotesk tracking-tighter">R$ 1.200</span>
+            <span class="text-white/40 text-sm font-space-grotesk">/mês</span>
+          </div>
+          <p class="text-white/30 text-xs font-jetbrains mt-1">+ taxa de setup</p>
+        </div>
+        <a href="mailto:zvisionforb2b@gmail.com" class="w-full bg-[#A2E635] text-black text-center py-3 text-sm font-medium font-space-grotesk hover:bg-[#A2E635]/90 transition-colors mb-8">
+          Solicitar proposta
+        </a>
+        <div class="h-px w-full bg-white/10 mb-6"></div>
+        <ul class="flex flex-col gap-3 mt-auto">
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/70 text-sm font-space-grotesk font-light">Diagnóstico de processos incluso</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/70 text-sm font-space-grotesk font-light">Até 3 automações implementadas</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/70 text-sm font-space-grotesk font-light">CRM + Atendimento automatizado</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/70 text-sm font-space-grotesk font-light">Dashboard de performance</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/70 text-sm font-space-grotesk font-light">Suporte prioritário</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Plan 3 -->
+      <div class="group bg-[#050506] p-8 flex flex-col hover:bg-white/[0.02] transition-colors reveal-on-scroll">
+        <div class="mb-6">
+          <h3 class="text-white font-medium text-sm uppercase tracking-wider font-space-grotesk mb-1">Escala</h3>
+          <p class="text-white/40 text-xs font-space-grotesk">Para operações que exigem automação em múltiplas frentes</p>
+        </div>
+        <div class="mb-6">
+          <div class="flex items-baseline gap-1">
+            <span class="text-3xl font-light text-white font-space-grotesk tracking-tighter">R$ 2.000</span>
+            <span class="text-white/40 text-sm font-space-grotesk">/mês</span>
+          </div>
+          <p class="text-white/30 text-xs font-jetbrains mt-1">+ taxa de setup</p>
+        </div>
+        <a href="mailto:zvisionforb2b@gmail.com" class="w-full border border-white/20 text-white text-center py-3 text-sm font-medium font-space-grotesk hover:border-white/50 hover:bg-white/5 transition-colors mb-8">
+          Falar com especialista
+        </a>
+        <div class="h-px w-full bg-white/10 mb-6"></div>
+        <ul class="flex flex-col gap-3 mt-auto">
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/60 text-sm font-space-grotesk font-light">Tudo do Profissional</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/60 text-sm font-space-grotesk font-light">Automações ilimitadas</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/60 text-sm font-space-grotesk font-light">Gestão completa mensal</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/60 text-sm font-space-grotesk font-light">Reuniões de alinhamento mensais</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="text-white/60 text-sm font-space-grotesk font-light">SLA com tempo de resposta garantido</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================ FOOTER ============================================================ -->
+<footer class="border-dashed bg-[#050506] border-white/10 border-t pt-20 pb-10">
+  <div class="max-w-6xl mx-auto w-full flex flex-col font-space-grotesk">
+    <!-- Top Section: Accent Green CTA -->
+    <div class="relative bg-[#A2E635] text-black w-full overflow-hidden border-x border-t border-dashed border-black/10">
+      <!-- Grid overlay -->
+      <div class="absolute inset-0 grid grid-cols-4 w-full h-full pointer-events-none">
+        <div class="border-r border-dashed border-black/10 h-full"></div>
+        <div class="border-r border-dashed border-black/10 h-full"></div>
+        <div class="border-r border-dashed border-black/10 h-full"></div>
+        <div class="h-full"></div>
+      </div>
+
+      <div class="relative z-10 px-6 py-16 md:px-12 md:py-20 flex flex-col justify-between min-h-[400px]">
+        <!-- Large Email Header -->
+        <a href="mailto:zvisionforb2b@gmail.com" class="group flex items-start justify-between w-full mb-24 md:mb-32 reveal-on-scroll">
+          <span class="text-4xl sm:text-6xl md:text-8xl lg:text-[7rem] leading-none font-semibold tracking-tighter break-words reveal-on-scroll">
+            Sua operação ainda depende de esforço manual?
+          </span>
+          <div class="pt-2 md:pt-6 flex-shrink-0 ml-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 md:w-16 md:h-16 transform group-hover:-translate-y-2 group-hover:translate-x-2 transition-transform duration-300">
+              <path d="M7 7h10v10"></path>
+              <path d="M7 17 17 7"></path>
+            </svg>
+          </div>
+        </a>
+
+        <!-- CTA Row -->
+        <div class="flex flex-col sm:flex-row items-start gap-4 mb-12 reveal-on-scroll">
+          <a href="mailto:zvisionforb2b@gmail.com" class="inline-flex items-center gap-2 bg-black text-white font-medium font-space-grotesk text-sm tracking-wide px-6 py-3 hover:bg-black/80 transition-colors">
+            Solicitar Diagnóstico Gratuito
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </a>
+          <a href="mailto:zvisionforb2b@gmail.com" class="inline-flex items-center gap-2 border border-black/20 text-black font-medium font-space-grotesk text-sm tracking-wide px-6 py-3 hover:bg-black/10 transition-colors">
+            Falar com um especialista
+          </a>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 md:text-base leading-relaxed z-20 text-sm font-medium relative gap-x-12 gap-y-12">
+          <!-- Col 1: Contact -->
+          <div class="flex flex-col gap-4">
+            <p class="text-black/80 text-sm reveal-on-scroll">Automação de processos internos, implementada e gerenciada por IA.</p>
+            <a href="mailto:zvisionforb2b@gmail.com" class="font-semibold text-black hover:text-black/70 transition-colors reveal-on-scroll">zvisionforb2b@gmail.com</a>
+          </div>
+          <!-- Col 2: Serviços -->
+          <div class="flex flex-col gap-4">
+            <span class="block text-black/50 font-semibold tracking-tight reveal-on-scroll">Serviços</span>
+            <div class="flex flex-col gap-2">
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Diagnóstico de Processos</a>
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Automação de Atendimento</a>
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Automação de Vendas e CRM</a>
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Integração de Sistemas</a>
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Dashboards Automatizados</a>
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Gestão Mensal</a>
+            </div>
+          </div>
+          <!-- Col 3: Empresa -->
+          <div class="flex flex-col gap-4">
+            <span class="block text-black/50 font-semibold tracking-tight reveal-on-scroll">Empresa</span>
+            <div class="flex flex-col gap-2">
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Sobre a Zvision</a>
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Como Funciona</a>
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Casos de Uso</a>
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Blog</a>
+              <a href="mailto:zvisionforb2b@gmail.com" class="hover:text-black/60 transition-colors reveal-on-scroll">Falar com Especialista</a>
+            </div>
+          </div>
+          <!-- Col 4: Legal -->
+          <div class="flex flex-col gap-4">
+            <span class="block text-black/50 font-semibold tracking-tight reveal-on-scroll">Legal</span>
+            <div class="flex flex-col gap-2">
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Política de Privacidade</a>
+              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Termos de Uso</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Section: Brand Text -->
+    <div class="relative bg-[#050506] text-white w-full overflow-hidden border-x border-b border-dashed border-white/10">
+      <!-- Grid Pattern -->
+      <div class="absolute inset-0 grid grid-cols-4 w-full h-full pointer-events-none opacity-20">
+        <div class="border-r border-dashed border-white/20 h-full"></div>
+        <div class="border-r border-dashed border-white/20 h-full"></div>
+        <div class="border-r border-dashed border-white/20 h-full"></div>
+        <div class="h-full"></div>
+      </div>
+      <!-- Massive Brand Text -->
+      <div class="relative z-10 w-full flex justify-center items-end leading-none select-none pt-12">
+        <h1 class="text-[18vw] md:text-[16rem] font-semibold tracking-tighter text-center leading-[0.75] mb-[-0.08em] mix-blend-screen text-white reveal-on-scroll">
+          ZVISION
+        </h1>
+      </div>
+      <!-- Copyright -->
+      <p class="relative z-10 text-center text-xs font-space-grotesk text-white/20 py-6 tracking-wide">
+        © 2025 Zvision Automation. Todos os direitos reservados.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- Mobile Menu Drawer -->
+<div id="mobileMenu" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col md:hidden">
+  <div class="flex items-center justify-between px-6 py-5 border-b border-dashed border-white/10">
+    <a href="/" class="flex items-center gap-2.5">
+      <svg width="22" height="22" viewBox="0 0 2085 2085" xmlns="http://www.w3.org/2000/svg"><g fill="#A2E635"><path d="M753.37 1579.84 c-27.49 -20.16 -59.86 -44.18 -72.28 -53.35 -12.22 -9.16 -56.20 -41.13 -97.73 -71.26 -41.33 -29.93 -76.56 -56.20 -77.78 -58.03 -2.04 -2.44 -2.65 -32.58 -2.65 -133.98 l0 -130.72 37.26 -27.28 c20.36 -15.27 99.36 -73.10 175.51 -128.89 76.15 -55.79 167.37 -122.58 202.60 -148.64 35.23 -25.86 70.04 -51.11 77.17 -55.99 18.33 -12.22 43.98 -23.82 66.99 -30.13 l19.75 -5.50 153.73 -0.41 c146.19 -0.61 153.52 -0.41 149.04 3.05 -2.65 1.83 -15.88 12.22 -29.52 23.01 -13.64 10.59 -27.49 21.18 -30.95 23.42 -5.90 3.67 -24.64 17.71 -63.73 47.44 -10.18 7.94 -19.14 14.46 -19.75 14.46 -0.61 0 -10.18 7.33 -21.18 16.29 -11.20 8.96 -21.18 16.29 -21.99 16.29 -0.81 0 -8.14 5.29 -16.09 11.81 -7.94 6.31 -19.55 15.27 -26.06 19.75 -6.31 4.48 -26.88 19.55 -45.41 33.60 -44.79 33.80 -61.69 46.42 -80.02 59.86 -8.35 6.11 -23.42 17.51 -33.60 25.25 -9.98 7.74 -24.03 18.12 -30.75 23.01 -6.92 4.89 -18.94 13.64 -26.47 19.55 -7.74 5.90 -19.34 14.66 -25.86 19.34 -6.31 4.89 -17.31 13.03 -24.43 18.33 -6.92 5.29 -15.88 12.01 -19.75 14.86 -3.87 3.05 -19.55 14.66 -34.61 26.06 -15.07 11.40 -28.91 21.79 -30.75 22.80 -4.07 2.44 -24.23 17.51 -47.65 35.63 -9.37 7.33 -20.36 15.47 -24.43 18.33 -4.07 2.85 -17.92 13.44 -31.15 23.42 -13.03 10.18 -28.51 21.58 -34.21 25.45 -8.55 5.90 -37.26 27.08 -78.59 58.44 -4.28 3.05 -11.20 8.14 -15.27 11.40 -4.28 3.05 -15.07 11.40 -24.23 18.33 -8.96 6.92 -21.58 16.09 -27.90 20.36 -6.31 4.28 -12.01 8.55 -12.62 9.57 -0.81 1.43 120.95 2.04 346.55 2.04 227.64 0 352.25 0.81 361.01 2.04 38.28 6.11 75.95 26.06 100.79 53.35 23.21 25.66 37.87 57.01 55.99 119.32 6.72 23.01 12.22 42.56 12.22 43.37 0 1.02 -130.72 1.83 -290.56 1.83 l-290.76 -0.20 -49.89 -36.65z"/></g></svg>
+      <span class="text-white font-semibold text-sm tracking-widest font-space-grotesk uppercase">Zvision</span>
+    </a>
+    <button onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-white/60 hover:text-white transition-colors p-2" aria-label="Fechar menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <nav class="flex flex-col flex-1 justify-center px-8 gap-2">
+    <a href="#" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Serviços</a>
+    <a href="#processo" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Como Funciona</a>
+    <a href="#" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Preços</a>
+    <a href="#" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Casos de Uso</a>
+    <a href="#" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Sobre</a>
+  </nav>
+  <div class="px-8 pb-10">
+    <a href="mailto:zvisionforb2b@gmail.com" class="flex items-center justify-center gap-2 bg-[#A2E635] text-black font-medium font-space-grotesk text-sm tracking-wide px-6 py-4 hover:bg-[#A2E635]/90 transition-colors w-full">
+      Falar com Especialista
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+<script>lucide.createIcons();</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('is-visible');
+          }, i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.05, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('main h1, main h2, main h3, main p, main button, main a, main .reveal-on-scroll, footer h1, footer a, footer p, footer span').forEach(el => {
+      if (!el.closest('.animate-marquee') && !el.closest('script') && !el.closest('style')) {
+        el.classList.add('reveal-on-scroll');
+        observer.observe(el);
+      }
+    });
+  });
+</script>
+</body>
+</html>
