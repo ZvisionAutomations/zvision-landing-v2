@@ -4,11 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zvision Automation — Processos Automatizados, Operação Escalável</title>
+<meta name="description" content="Mapeamos, implementamos e gerenciamos automações de IA nos seus processos internos. Diagnóstico gratuito. Resultados mensuráveis.">
+
+<!-- Tailwind Play CDN — substituir por Tailwind CLI em produção para melhor performance -->
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- Fonts: preconnect + display=swap (já incluído via URL) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" onload="this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+
+<!-- Lenis CSS (mínimo, necessário para smooth scroll) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.css">
 <style>
 body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
@@ -16,8 +23,6 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
 .font-jetbrains { font-family: 'JetBrains Mono', monospace !important; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-.animate-marquee { animation: marquee 28s linear infinite; display: flex; width: max-content; }
 @keyframes reveal { from { opacity: 0; transform: translateY(20px); filter: blur(8px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
 .reveal-on-scroll { animation: reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-play-state: paused; }
 .reveal-on-scroll.is-visible { animation-play-state: running; }
@@ -25,8 +30,72 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
 @keyframes barOutlineAnim { 0% { height: 0; opacity: 0; } 5% { height: 0; opacity: 1; } 20% { height: var(--h); opacity: 1; } 80% { height: var(--h); opacity: 1; } 90% { height: var(--h); opacity: 0; } 100% { height: 0; opacity: 0; } }
 @keyframes barFillAnim { 0%, 20% { height: 0; opacity: 1; } 40% { height: 100%; opacity: 1; } 75% { height: 100%; opacity: 1; } 85% { height: 100%; opacity: 0; } 100% { height: 0; opacity: 0; } }
 </style>
+<style>
+/* ── Cursor ring ── */
+.cursor-ring {
+  position: fixed; top: 0; left: 0;
+  width: 28px; height: 28px;
+  border: 1px solid rgba(162,230,53,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+  mix-blend-mode: difference;
+}
+@media (hover: hover) and (pointer: fine) { .cursor-ring { display: block; } }
+.cursor-ring.hot { border-color: rgba(162,230,53,0.9); background: rgba(162,230,53,0.12); box-shadow: 0 0 14px rgba(162,230,53,0.25); }
+
+/* ── Integration chips ── */
+.int-chip {
+  display: inline-flex; align-items: center;
+  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer; background: transparent;
+  transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease, transform 0.15s ease;
+  user-select: none;
+}
+.int-chip:hover { border-color: rgba(162,230,53,0.6); color: #A2E635; background: rgba(162,230,53,0.05); transform: translateY(-1px); }
+.int-chip:active { transform: scale(0.96); }
+
+/* ── Step circular badge ── */
+.step-badge {
+  width: 36px; height: 36px; flex-shrink: 0;
+  border: 1px dashed rgba(162,230,53,0.7);
+  color: #A2E635;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.12em;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(162,230,53,0.05);
+  border-radius: 50%;
+}
+
+/* ── Performance: promote animated layers ── */
+.cursor-ring { will-change: transform; }
+#scrollProgress { will-change: width; }
+.reveal-on-scroll { will-change: opacity, transform; }
+
+/* ── Performance: lazy render off-screen sections ── */
+section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 0 600px; }
+
+/* ── Dashboard view panels ── */
+.dash-view { display: none; }
+.dash-view.active { display: block; }
+.dash-sidebar-btn { transition: background 0.2s ease, color 0.2s ease; cursor: pointer; }
+.dash-sidebar-btn.active { background: rgba(162,230,53,0.1) !important; }
+.dash-sidebar-btn.active span { color: #A2E635 !important; }
+.dash-sidebar-btn svg { color: rgb(100,116,139); transition: color 0.2s ease; }
+.dash-sidebar-btn.active svg { color: #A2E635 !important; }
+</style>
 </head>
-<body class="bg-[#050506] min-h-screen flex flex-col overflow-x-hidden selection:bg-[#A2E635]/30 selection:text-[#A2E635] text-white/70">
+<body class="bg-[#050506] min-h-screen flex flex-col overflow-x-hidden selection:bg-[#A2E635] selection:text-black text-white/70">
+
+<!-- Scroll progress + cursor ring -->
+<div id="scrollProgress" style="position:fixed;top:0;left:0;height:1.5px;background:#A2E635;z-index:80;width:0%;box-shadow:0 0 12px rgba(162,230,53,0.5);transition:width 0.1s linear;pointer-events:none;"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
 <!-- ============================================================ BOOT SEQUENCE ============================================================ -->
 <style>
@@ -154,7 +223,7 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
     <div class="col-span-4 hidden md:flex items-center">
       <a href="#" class="flex items-center justify-center hover:bg-white/10 transition-colors border-dashed text-xs font-medium text-white tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">SERVIÇOS</a>
       <a href="#" class="flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">COMO FUNCIONA</a>
-      <a href="#" class="flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">PREÇOS</a>
+      <a href="#contato" class="flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">CONTATO</a>
     </div>
     <!-- Mobile Menu -->
     <div class="col-span-2 md:hidden flex items-center pl-6 border-r border-dashed border-white/10 cursor-pointer" id="menuToggle" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
@@ -176,9 +245,9 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
     <div class="col-span-2 md:col-span-4 flex items-center justify-end">
       <a href="#" class="hidden md:flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r border-l pr-8 pl-8">CASOS DE USO</a>
       <a href="#" class="hidden md:flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">SOBRE</a>
-      <a href="mailto:zvisionforb2b@gmail.com" class="md:w-auto flex items-center justify-center hover:text-[#A2E635] transition-colors gap-2 text-xs font-medium text-white tracking-wide font-space-grotesk w-full h-full pr-8 pl-8">
-        FALAR COM ESPECIALISTA
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      <a href="mailto:zvisionforb2b@gmail.com" class="hidden md:inline-flex items-center gap-2 font-space-grotesk font-medium text-black bg-[#A2E635] hover:bg-[#A2E635]/90 transition-colors mr-4" style="padding:10px 18px;font-size:13px;">
+        Falar com especialista
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
       </a>
     </div>
   </div>
@@ -203,22 +272,39 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
         <!-- H1 -->
         <h1 class="text-5xl sm:text-6xl lg:text-7xl text-white leading-[1.1] mb-8 font-space-grotesk font-light tracking-tighter reveal-on-scroll is-visible">
           Sua operação<br>
-          <span class="font-space-grotesk font-light tracking-tighter text-white/40">trabalhando</span><br>
-          sem parar.
+          <em>trabalhando</em><br>
+          <span style="color:#A2E635;">sem parar.</span>
         </h1>
         <!-- Subtitle -->
         <p class="text-lg sm:text-xl leading-relaxed max-w-lg mb-12 font-light font-space-grotesk text-white/80 reveal-on-scroll is-visible">
           Mapeamos, implementamos e gerenciamos automações de IA nos seus processos internos — para que sua equipe opere com mais resultado e menos esforço.
         </p>
         <!-- CTAs -->
-        <div class="flex flex-col sm:flex-row gap-4 reveal-on-scroll is-visible">
-          <a href="mailto:zvisionforb2b@gmail.com" class="inline-flex items-center justify-center gap-2 bg-[#A2E635] text-black font-medium font-space-grotesk text-sm tracking-wide px-6 py-3 hover:bg-[#A2E635]/90 transition-colors">
+        <div class="flex flex-col sm:flex-row gap-3 reveal-on-scroll is-visible">
+          <a href="mailto:zvisionforb2b@gmail.com" style="padding:18px 24px;font-size:13px;" class="inline-flex items-center justify-center gap-2 bg-[#A2E635] text-black font-medium font-space-grotesk hover:bg-[#A2E635]/90 transition-colors">
             Solicitar Diagnóstico
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
           </a>
-          <a href="#processo" class="inline-flex items-center justify-center gap-2 border border-white/20 text-white font-medium font-space-grotesk text-sm tracking-wide px-6 py-3 hover:border-white/50 hover:bg-white/5 transition-colors">
+          <a href="#processo" style="padding:18px 24px;font-size:13px;" class="inline-flex items-center justify-center gap-2 border border-white/20 text-white font-medium font-space-grotesk hover:border-white/50 hover:bg-white/5 transition-colors">
             Ver como funciona
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
           </a>
+        </div>
+
+        <!-- Trust strip — KPIs -->
+        <div class="reveal-on-scroll mt-10 grid grid-cols-3" style="border-top:1px dashed rgba(255,255,255,0.1);">
+          <div style="padding:18px 16px 18px 0;">
+            <p class="font-jetbrains" style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:6px;">Processos</p>
+            <p class="font-space-grotesk" style="font-size:clamp(20px,2.4vw,28px);font-weight:300;color:#fff;letter-spacing:-0.03em;" data-counter="34">0</p>
+          </div>
+          <div style="padding:18px 16px;border-left:1px dashed rgba(255,255,255,0.1);">
+            <p class="font-jetbrains" style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:6px;">Horas / mês</p>
+            <p class="font-space-grotesk" style="font-size:clamp(20px,2.4vw,28px);font-weight:300;color:#fff;letter-spacing:-0.03em;" data-counter="280" data-suffix="h">0</p>
+          </div>
+          <div style="padding:18px 16px;border-left:1px dashed rgba(255,255,255,0.1);">
+            <p class="font-jetbrains" style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:6px;">SLA</p>
+            <p class="font-space-grotesk" style="font-size:clamp(20px,2.4vw,28px);font-weight:300;color:#A2E635;letter-spacing:-0.03em;">99,2%</p>
+          </div>
         </div>
       </div>
       <!-- Right: Dashboard Widget -->
@@ -290,45 +376,6 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
   </div>
 </section>
 
-<!-- ============================================================ MARQUEE ============================================================ -->
-<section class="border-dashed bg-[#050506] border-white/10 border-b py-5 overflow-hidden">
-  <div class="flex items-center gap-6 overflow-hidden">
-    <!-- Label -->
-    <div class="hidden sm:flex items-center flex-shrink-0 pl-6 border-r border-dashed border-white/10 pr-6 h-full">
-      <span class="text-xs font-jetbrains text-white/30 tracking-widest uppercase whitespace-nowrap">OPERAÇÕES QUE JÁ AUTOMATIZAMOS</span>
-    </div>
-    <!-- Ticker -->
-    <div class="overflow-hidden flex-1">
-      <div class="animate-marquee">
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Nexora</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Stratify</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Caldwell Group</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Orbita Systems</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Plenix</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Verant Capital</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <!-- duplicate for seamless loop -->
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Nexora</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Stratify</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Caldwell Group</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Orbita Systems</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Plenix</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-        <span class="text-xs font-space-grotesk text-white/40 tracking-widest uppercase px-8">Verant Capital</span>
-        <span class="text-[#A2E635]/40 text-xs">·</span>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ============================================================ SECTION 01 - PLATAFORMA ============================================================ -->
 <section class="border-dashed bg-[#050506] border-white/10 border-b pt-24 pb-0">
@@ -359,76 +406,76 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
   </div>
 
   <!-- Feature Cards Grid -->
-  <div class="max-w-6xl mx-auto border border-dashed border-white/10">
-    <!-- Top Row: 4 Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-12">
-      <!-- Card 1 -->
-      <div class="group col-span-12 md:col-span-3 border-b border-dashed border-white/10 md:border-r p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
-        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#A2E635]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div class="mb-4">
-          <span class="text-[10px] font-jetbrains text-[#A2E635]/70 tracking-widest uppercase">Análise de Processos</span>
-        </div>
-        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk tracking-tight reveal-on-scroll">
-          Mapeamos antes de automatizar.
-        </h3>
-        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
-          Auditamos os fluxos operacionais da sua empresa e identificamos exatamente onde há perda de tempo, retrabalho e custo desnecessário. Nenhuma implementação começa sem dados.
-        </p>
-        <div class="mt-6 w-8 h-8 rounded bg-[#A2E635]/10 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A2E635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
-        </div>
-      </div>
+  <div class="max-w-6xl mx-auto" style="border:1px dashed rgba(255,255,255,0.1);">
 
-      <!-- Card 2 -->
-      <div class="group col-span-12 md:col-span-3 border-b border-dashed border-white/10 md:border-r p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
-        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#A2E635]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div class="mb-4">
-          <span class="text-[10px] font-jetbrains text-[#A2E635]/70 tracking-widest uppercase">Implementação</span>
-        </div>
-        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk tracking-tight reveal-on-scroll">
-          Sistemas que entram em produção.
-        </h3>
-        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
-          Construímos e configuramos as automações diretamente no seu ambiente — chatbots, CRM, integrações e fluxos de trabalho. Entregamos operando, não em fase de testes.
-        </p>
-        <div class="mt-6 w-8 h-8 rounded bg-[#A2E635]/10 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A2E635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-        </div>
-      </div>
+    <style>
+      .feature-card { padding:32px;position:relative;overflow:hidden;transition:background 0.25s ease; }
+      .feature-card:hover { background:rgba(255,255,255,0.015); }
+      .feature-card .icon-tile { display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:rgba(162,230,53,0.08);border:1px solid rgba(162,230,53,0.15);color:#A2E635; }
+      @media (min-width:720px) {
+        .feature-grid { grid-template-columns:repeat(2,1fr) !important; }
+        .feature-grid > .feature-card:nth-child(odd) { border-right:1px dashed rgba(255,255,255,0.1); }
+        .feature-grid > .feature-card:nth-child(1),
+        .feature-grid > .feature-card:nth-child(2) { border-bottom:1px dashed rgba(255,255,255,0.1); }
+        .feature-grid > .feature-card:nth-child(3),
+        .feature-grid > .feature-card:nth-child(4) { border-bottom:1px dashed rgba(255,255,255,0.1); }
+      }
+      @media (min-width:1080px) {
+        .feature-grid { grid-template-columns:repeat(4,1fr) !important; }
+        .feature-grid > .feature-card { border-right:1px dashed rgba(255,255,255,0.1) !important; border-bottom:1px dashed rgba(255,255,255,0.1) !important; }
+        .feature-grid > .feature-card:last-child { border-right:none !important; }
+      }
+    </style>
 
-      <!-- Card 3 -->
-      <div class="group col-span-12 md:col-span-3 border-b border-dashed border-white/10 md:border-r p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
-        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#A2E635]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div class="mb-4">
-          <span class="text-[10px] font-jetbrains text-[#A2E635]/70 tracking-widest uppercase">Integração de Sistemas</span>
+    <!-- Top Row: 4 Cards — responsive 1→2→4 col -->
+    <div class="feature-grid" style="display:grid;grid-template-columns:1fr;">
+      <article class="feature-card reveal-on-scroll" style="border-bottom:1px dashed rgba(255,255,255,0.1);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;">
+          <span class="font-jetbrains" style="font-size:10px;color:#A2E635;letter-spacing:0.18em;text-transform:uppercase;">Análise</span>
+          <span class="font-jetbrains" style="font-size:10px;color:rgba(255,255,255,0.25);">→ 01</span>
         </div>
-        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk tracking-tight reveal-on-scroll">
-          Seus dados, conectados e fluindo.
-        </h3>
-        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
-          Conectamos plataformas, APIs e ferramentas que hoje funcionam de forma isolada. O dado certo chega no lugar certo, no momento certo — sem intervenção humana no meio do caminho.
-        </p>
-        <div class="mt-6 w-8 h-8 rounded bg-[#A2E635]/10 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A2E635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
-        </div>
-      </div>
+        <h3 class="font-space-grotesk" style="font-size:19px;font-weight:400;color:#fff;letter-spacing:-0.02em;margin-bottom:14px;line-height:1.3;">Mapeamos antes de automatizar.</h3>
+        <p class="font-space-grotesk" style="font-size:14px;line-height:1.65;color:rgba(255,255,255,0.45);margin-bottom:24px;">Auditamos os fluxos operacionais da sua empresa e identificamos exatamente onde há perda de tempo, retrabalho e custo desnecessário. Nenhuma implementação começa sem dados.</p>
+        <span class="icon-tile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        </span>
+      </article>
 
-      <!-- Card 4 -->
-      <div class="group col-span-12 md:col-span-3 border-b border-dashed border-white/10 p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
-        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#A2E635]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div class="mb-4">
-          <span class="text-[10px] font-jetbrains text-[#A2E635]/70 tracking-widest uppercase">Gestão Mensal</span>
+      <article class="feature-card reveal-on-scroll" style="border-bottom:1px dashed rgba(255,255,255,0.1);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;">
+          <span class="font-jetbrains" style="font-size:10px;color:#A2E635;letter-spacing:0.18em;text-transform:uppercase;">Implementação</span>
+          <span class="font-jetbrains" style="font-size:10px;color:rgba(255,255,255,0.25);">→ 02</span>
         </div>
-        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk tracking-tight reveal-on-scroll">
-          Gerenciamos o que implementamos.
-        </h3>
-        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
-          Ficamos ativos nas suas automações — monitoramento, ajustes, otimizações e suporte técnico contínuo. A diferença entre uma ferramenta que para de funcionar e um sistema que evolui com o negócio.
-        </p>
-        <div class="mt-6 w-8 h-8 rounded bg-[#A2E635]/10 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A2E635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"></path></svg>
+        <h3 class="font-space-grotesk" style="font-size:19px;font-weight:400;color:#fff;letter-spacing:-0.02em;margin-bottom:14px;line-height:1.3;">Sistemas que entram em produção.</h3>
+        <p class="font-space-grotesk" style="font-size:14px;line-height:1.65;color:rgba(255,255,255,0.45);margin-bottom:24px;">Construímos e configuramos as automações diretamente no seu ambiente — chatbots, CRM, integrações e fluxos de trabalho. Entregamos operando, não em fase de testes.</p>
+        <span class="icon-tile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </span>
+      </article>
+
+      <article class="feature-card reveal-on-scroll" style="border-bottom:1px dashed rgba(255,255,255,0.1);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;">
+          <span class="font-jetbrains" style="font-size:10px;color:#A2E635;letter-spacing:0.18em;text-transform:uppercase;">Integração</span>
+          <span class="font-jetbrains" style="font-size:10px;color:rgba(255,255,255,0.25);">→ 03</span>
         </div>
-      </div>
+        <h3 class="font-space-grotesk" style="font-size:19px;font-weight:400;color:#fff;letter-spacing:-0.02em;margin-bottom:14px;line-height:1.3;">Seus dados, conectados e fluindo.</h3>
+        <p class="font-space-grotesk" style="font-size:14px;line-height:1.65;color:rgba(255,255,255,0.45);margin-bottom:24px;">Conectamos plataformas, APIs e ferramentas que hoje funcionam de forma isolada. O dado certo chega no lugar certo, no momento certo — sem intervenção humana no meio do caminho.</p>
+        <span class="icon-tile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+        </span>
+      </article>
+
+      <article class="feature-card reveal-on-scroll" style="border-bottom:1px dashed rgba(255,255,255,0.1);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;">
+          <span class="font-jetbrains" style="font-size:10px;color:#A2E635;letter-spacing:0.18em;text-transform:uppercase;">Gestão</span>
+          <span class="font-jetbrains" style="font-size:10px;color:rgba(255,255,255,0.25);">→ 04</span>
+        </div>
+        <h3 class="font-space-grotesk" style="font-size:19px;font-weight:400;color:#fff;letter-spacing:-0.02em;margin-bottom:14px;line-height:1.3;">Gerenciamos o que implementamos.</h3>
+        <p class="font-space-grotesk" style="font-size:14px;line-height:1.65;color:rgba(255,255,255,0.45);margin-bottom:24px;">Ficamos ativos nas suas automações — monitoramento, ajustes, otimizações e suporte técnico contínuo. A diferença entre uma ferramenta que para de funcionar e um sistema que evolui com o negócio.</p>
+        <span class="icon-tile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+        </span>
+      </article>
     </div>
 
     <!-- Bottom Row: Dashboard Mockup + Stats -->
@@ -450,30 +497,30 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
           <!-- Dashboard Grid -->
           <div class="flex flex-col md:grid md:grid-cols-12 gap-px bg-white/5 border border-dashed border-white/10">
             <!-- Sidebar -->
-            <div class="hidden md:flex md:col-span-3 bg-[#050506] p-4 flex-col gap-1">
-              <div class="flex items-center gap-2 px-2 py-1.5 bg-[#A2E635]/10 border border-[#A2E635]/20 rounded-sm cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A2E635" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span class="text-[9px] font-space-grotesk text-[#A2E635] uppercase tracking-wide">Visão Geral</span>
+            <div id="dash-nav" class="hidden md:flex md:col-span-3 bg-[#050506] p-4 flex-col gap-1">
+              <div class="dash-sidebar-btn active flex items-center gap-2 px-2 py-1.5 rounded-sm" data-view="visao-geral">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span class="text-[9px] font-space-grotesk uppercase tracking-wide">Visão Geral</span>
               </div>
-              <div class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-white/5 rounded-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-500"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>
-                <span class="text-[9px] font-space-grotesk text-slate-500 uppercase tracking-wide">Automações</span>
+              <div class="dash-sidebar-btn flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-white/5" data-view="automacoes">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>
+                <span class="text-[9px] font-space-grotesk uppercase tracking-wide">Automações</span>
               </div>
-              <div class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-white/5 rounded-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-500"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
-                <span class="text-[9px] font-space-grotesk text-slate-500 uppercase tracking-wide">Integrações</span>
+              <div class="dash-sidebar-btn flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-white/5" data-view="integracoes">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
+                <span class="text-[9px] font-space-grotesk uppercase tracking-wide">Integrações</span>
               </div>
-              <div class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-white/5 rounded-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-500"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
-                <span class="text-[9px] font-space-grotesk text-slate-500 uppercase tracking-wide">Relatórios</span>
+              <div class="dash-sidebar-btn flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-white/5" data-view="relatorios">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                <span class="text-[9px] font-space-grotesk uppercase tracking-wide">Relatórios</span>
               </div>
-              <div class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-white/5 rounded-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-500"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                <span class="text-[9px] font-space-grotesk text-slate-500 uppercase tracking-wide">Alertas</span>
+              <div class="dash-sidebar-btn flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-white/5" data-view="alertas">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                <span class="text-[9px] font-space-grotesk uppercase tracking-wide">Alertas</span>
               </div>
-              <div class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-white/5 rounded-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-500"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                <span class="text-[9px] font-space-grotesk text-slate-500 uppercase tracking-wide">Config.</span>
+              <div class="dash-sidebar-btn flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-white/5" data-view="config">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <span class="text-[9px] font-space-grotesk uppercase tracking-wide">Config.</span>
               </div>
             </div>
             <!-- Main Content -->
@@ -482,15 +529,15 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
               <div class="grid grid-cols-3 gap-px mb-4 bg-white/5">
                 <div class="bg-[#0d0d10] p-3">
                   <p class="text-[9px] font-space-grotesk text-white/30 uppercase mb-1">Automações ativas</p>
-                  <p class="text-lg font-light text-white font-space-grotesk">34</p>
+                  <p id="dash-kpi-1" class="text-lg font-light text-white font-space-grotesk">34</p>
                 </div>
                 <div class="bg-[#0d0d10] p-3">
                   <p class="text-[9px] font-space-grotesk text-white/30 uppercase mb-1">Execuções hoje</p>
-                  <p class="text-lg font-light text-white font-space-grotesk">2.847</p>
+                  <p id="dash-kpi-2" class="text-lg font-light text-white font-space-grotesk">2.847</p>
                 </div>
                 <div class="bg-[#0d0d10] p-3">
                   <p class="text-[9px] font-space-grotesk text-white/30 uppercase mb-1">Taxa de sucesso</p>
-                  <p class="text-lg font-light text-[#A2E635] font-space-grotesk">99,2%</p>
+                  <p id="dash-kpi-3" class="text-lg font-light text-[#A2E635] font-space-grotesk">99,2%</p>
                 </div>
               </div>
               <!-- Bar Chart -->
@@ -534,8 +581,8 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
       <!-- Stats Side -->
       <div class="col-span-12 md:col-span-4 flex flex-col">
         <div class="p-8 flex-1 border-b border-dashed border-white/10 reveal-on-scroll">
-          <div class="text-[56px] leading-none font-light text-[#A2E635] tracking-tighter font-space-grotesk mb-2">
-            280h
+          <div class="text-[56px] leading-none font-light text-[#A2E635] tracking-tighter font-space-grotesk mb-2" data-counter="280" data-suffix="h">
+            0
           </div>
           <h3 class="text-white font-medium text-sm mb-2 uppercase tracking-wide font-space-grotesk reveal-on-scroll">
             Horas Economizadas / Mês
@@ -545,6 +592,13 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
           </p>
         </div>
         <div class="p-8 flex flex-col justify-end reveal-on-scroll">
+          <div class="flex flex-wrap gap-2 mb-4">
+            <button class="int-chip">CRM</button>
+            <button class="int-chip">ERP</button>
+            <button class="int-chip">WhatsApp</button>
+            <button class="int-chip">E-mail</button>
+            <button class="int-chip">API</button>
+          </div>
           <h3 class="text-white font-medium text-sm mb-2 uppercase tracking-wide font-space-grotesk reveal-on-scroll">
             Integrações Nativas
           </h3>
@@ -575,193 +629,193 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
     </div>
 
     <!-- Steps Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-px bg-white/5 border border-dashed border-white/10">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-dashed border-white/10">
       <!-- Step 1 -->
-      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative reveal-on-scroll">
-        <div class="mb-6">
-          <span class="text-xs font-jetbrains text-white/20 tracking-widest">01</span>
+      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="step-badge">01</span>
+          <span class="text-[10px] font-jetbrains text-white/30 tracking-widest uppercase">5 dias úteis</span>
         </div>
-        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk reveal-on-scroll">Diagnóstico</h3>
-        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+        <h3 class="text-white font-normal text-[19px] tracking-tight mb-3 font-space-grotesk">Diagnóstico</h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/40 mb-8">
           Auditamos seus processos internos em até 5 dias úteis. Identificamos os gargalos com maior impacto em custo e tempo — e apresentamos um plano de automação com ROI estimado.
         </p>
-        <div class="mt-8 w-full h-px bg-gradient-to-r from-[#A2E635]/30 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 overflow-hidden">
+          <div class="h-full bg-[#A2E635] w-0 group-hover:w-full transition-all duration-700 ease-in-out"></div>
+        </div>
       </div>
       <!-- Step 2 -->
-      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative reveal-on-scroll">
-        <div class="mb-6">
-          <span class="text-xs font-jetbrains text-white/20 tracking-widest">02</span>
+      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="step-badge">02</span>
+          <span class="text-[10px] font-jetbrains text-white/30 tracking-widest uppercase">Sem surpresas</span>
         </div>
-        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk reveal-on-scroll">Proposta e Escopo</h3>
-        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+        <h3 class="text-white font-normal text-[19px] tracking-tight mb-3 font-space-grotesk">Proposta &amp; Escopo</h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/40 mb-8">
           Definimos junto com você quais processos automatizar primeiro, as ferramentas envolvidas e os entregáveis de cada fase. Sem surpresas no meio do caminho.
         </p>
-        <div class="mt-8 w-full h-px bg-gradient-to-r from-[#A2E635]/20 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 overflow-hidden">
+          <div class="h-full bg-[#A2E635] w-0 group-hover:w-full transition-all duration-700 ease-in-out"></div>
+        </div>
       </div>
       <!-- Step 3 -->
-      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative reveal-on-scroll">
-        <div class="mb-6">
-          <span class="text-xs font-jetbrains text-white/20 tracking-widest">03</span>
+      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="step-badge">03</span>
+          <span class="text-[10px] font-jetbrains text-white/30 tracking-widest uppercase">Em produção</span>
         </div>
-        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk reveal-on-scroll">Implementação</h3>
-        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+        <h3 class="text-white font-normal text-[19px] tracking-tight mb-3 font-space-grotesk">Implementação</h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/40 mb-8">
           Construímos e configuramos as automações no seu ambiente real. Integramos com os sistemas que você já usa — sem migração, sem substituição de ferramenta.
         </p>
-        <div class="mt-8 w-full h-px bg-gradient-to-r from-[#A2E635]/15 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 overflow-hidden">
+          <div class="h-full bg-[#A2E635] w-0 group-hover:w-full transition-all duration-700 ease-in-out"></div>
+        </div>
       </div>
       <!-- Step 4 -->
-      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative reveal-on-scroll">
-        <div class="mb-6">
-          <span class="text-xs font-jetbrains text-white/20 tracking-widest">04</span>
+      <div class="group bg-[#050506] p-8 hover:bg-white/[0.02] transition-colors relative overflow-hidden reveal-on-scroll">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="step-badge">04</span>
+          <span class="text-[10px] font-jetbrains text-white/30 tracking-widest uppercase">Mensal contínuo</span>
         </div>
-        <h3 class="text-white font-medium text-base mb-3 font-space-grotesk reveal-on-scroll">Gestão Contínua</h3>
-        <p class="text-sm leading-relaxed font-space-grotesk text-white/50 reveal-on-scroll">
+        <h3 class="text-white font-normal text-[19px] tracking-tight mb-3 font-space-grotesk">Gestão Contínua</h3>
+        <p class="text-sm leading-relaxed font-space-grotesk text-white/40 mb-8">
           Após a entrega, ficamos ativos. Monitoramos, ajustamos e expandimos as automações mensalmente — garantindo que o sistema opere no nível de desempenho esperado.
         </p>
-        <div class="mt-8 w-full h-px bg-gradient-to-r from-[#A2E635]/10 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 overflow-hidden">
+          <div class="h-full bg-[#A2E635] w-0 group-hover:w-full transition-all duration-700 ease-in-out"></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============================================================ PRICING ============================================================ -->
-<section class="border-dashed bg-[#050506] border-white/10 border-b pt-24 pb-24">
-  <div class="max-w-6xl mx-auto px-6">
-    <div class="mb-16">
-      <div class="flex items-center gap-3 mb-4">
-        <span class="uppercase text-xs font-semibold text-[#A2E635] tracking-widest font-space-grotesk">04. Preços</span>
-      </div>
-      <h2 class="text-4xl md:text-5xl text-white font-light tracking-tighter font-space-grotesk reveal-on-scroll">
-        Retainer mensal. Sem surpresas.
-      </h2>
-      <p class="text-lg font-space-grotesk text-white/50 mt-4 max-w-lg reveal-on-scroll">
-        Todos os planos incluem diagnóstico inicial, implementação e gestão contínua. A taxa de setup é cobrada uma única vez.
-      </p>
-    </div>
+<!-- ============================================================ FALE COM ESPECIALISTA ============================================================ -->
+<!-- WhatsApp: +5511914961433 -->
+<section id="contato" style="position:relative;background:#080c10;border-top:1px dashed rgba(255,255,255,0.1);border-bottom:1px dashed rgba(255,255,255,0.1);overflow:hidden;padding:clamp(80px,10vw,128px) 0;">
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10 border border-dashed border-white/10">
-      <!-- Plan 1 -->
-      <div class="group bg-[#050506] p-8 flex flex-col hover:bg-white/[0.02] transition-colors reveal-on-scroll">
-        <div class="mb-6">
-          <h3 class="text-white font-medium text-sm uppercase tracking-wider font-space-grotesk mb-1">Essencial</h3>
-          <p class="text-white/40 text-xs font-space-grotesk">Para equipes que estão começando a automatizar</p>
-        </div>
-        <div class="mb-6">
-          <div class="flex items-baseline gap-1">
-            <span class="text-3xl font-light text-white font-space-grotesk tracking-tighter">R$ 500</span>
-            <span class="text-white/40 text-sm font-space-grotesk">/mês</span>
-          </div>
-          <p class="text-white/30 text-xs font-jetbrains mt-1">+ taxa de setup</p>
-        </div>
-        <a href="mailto:zvisionforb2b@gmail.com" class="w-full border border-white/20 text-white text-center py-3 text-sm font-medium font-space-grotesk hover:border-white/50 hover:bg-white/5 transition-colors mb-8">
-          Solicitar proposta
-        </a>
-        <div class="h-px w-full bg-white/10 mb-6"></div>
-        <ul class="flex flex-col gap-3 mt-auto">
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/60 text-sm font-space-grotesk font-light">Diagnóstico de processos incluso</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/60 text-sm font-space-grotesk font-light">1 automação implementada</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/30 flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/30 text-sm font-space-grotesk font-light">Gestão e monitoramento mensal</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/30 flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/30 text-sm font-space-grotesk font-light">Suporte via e-mail</span>
-          </li>
-        </ul>
-      </div>
+  <!-- Lime accent line no topo (signature da seção) -->
+  <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(162,230,53,0.5) 25%,rgba(162,230,53,0.85) 50%,rgba(162,230,53,0.5) 75%,transparent 100%);box-shadow:0 0 28px rgba(162,230,53,0.28);pointer-events:none;"></div>
 
-      <!-- Plan 2 - Popular -->
-      <div class="group bg-[#050506] p-8 flex flex-col relative hover:bg-white/[0.02] transition-colors reveal-on-scroll border-l border-r border-dashed border-[#A2E635]/20">
-        <div class="absolute top-0 left-0 right-0 h-px bg-[#A2E635]"></div>
-        <div class="mb-6">
-          <div class="flex items-center gap-2 mb-2">
-            <h3 class="text-white font-medium text-sm uppercase tracking-wider font-space-grotesk">Profissional</h3>
-            <span class="text-[9px] font-jetbrains text-black bg-[#A2E635] px-2 py-0.5 uppercase tracking-wider">Mais popular</span>
+  <!-- Ambient orb — lime/4, não intrusivo -->
+  <div style="position:absolute;top:-15%;right:-8%;width:700px;height:700px;background:rgba(162,230,53,0.04);border-radius:50%;filter:blur(140px);pointer-events:none;"></div>
+
+  <!-- Corner brackets (brand signature do design system) -->
+  <div style="position:absolute;top:20px;left:20px;width:14px;height:14px;border-top:1px dashed rgba(162,230,53,0.35);border-left:1px dashed rgba(162,230,53,0.35);"></div>
+  <div style="position:absolute;top:20px;right:20px;width:14px;height:14px;border-top:1px dashed rgba(162,230,53,0.35);border-right:1px dashed rgba(162,230,53,0.35);"></div>
+  <div style="position:absolute;bottom:20px;left:20px;width:14px;height:14px;border-bottom:1px dashed rgba(162,230,53,0.35);border-left:1px dashed rgba(162,230,53,0.35);"></div>
+  <div style="position:absolute;bottom:20px;right:20px;width:14px;height:14px;border-bottom:1px dashed rgba(162,230,53,0.35);border-right:1px dashed rgba(162,230,53,0.35);"></div>
+
+  <div class="max-w-6xl mx-auto px-6" style="position:relative;z-index:2;">
+    <div class="grid grid-cols-1 md:grid-cols-12 items-start" style="gap:clamp(48px,6vw,80px);">
+
+      <!-- ── LEFT: Copy block ── -->
+      <div class="col-span-12 md:col-span-7">
+
+        <!-- Eyebrow + status pill -->
+        <div class="reveal-on-scroll" style="display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;border-bottom:1px dashed rgba(255,255,255,0.07);margin-bottom:36px;">
+          <span class="font-jetbrains text-[#A2E635] uppercase" style="font-size:10px;letter-spacing:0.18em;">04 / Contato</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:6px;height:6px;border-radius:50%;background:#A2E635;box-shadow:0 0 8px rgba(162,230,53,0.65);animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite;display:inline-block;"></span>
+            <span class="font-jetbrains uppercase" style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.16em;">IA disponível agora</span>
           </div>
-          <p class="text-white/40 text-xs font-space-grotesk">Para operações em crescimento que precisam de mais automação</p>
         </div>
-        <div class="mb-6">
-          <div class="flex items-baseline gap-1">
-            <span class="text-3xl font-light text-white font-space-grotesk tracking-tighter">R$ 1.200</span>
-            <span class="text-white/40 text-sm font-space-grotesk">/mês</span>
-          </div>
-          <p class="text-white/30 text-xs font-jetbrains mt-1">+ taxa de setup</p>
+
+        <!-- Headline -->
+        <h2 class="font-space-grotesk font-light text-white reveal-on-scroll" style="font-size:clamp(2.8rem,5.5vw,4.2rem);line-height:1.05;letter-spacing:-0.04em;margin-bottom:28px;">
+          Cada projeto<br>é <em>único.</em><br>O seu também.
+        </h2>
+
+        <p class="font-space-grotesk font-light reveal-on-scroll" style="font-size:clamp(15px,1.3vw,17px);line-height:1.7;color:rgba(255,255,255,0.48);max-width:440px;margin-bottom:52px;">
+          Nenhuma tabela de preço cabe na complexidade real de uma operação. Nossa IA entende seu contexto e traça um diagnóstico em minutos.
+        </p>
+
+        <!-- Reasons — suporte visual à decisão -->
+        <div class="reveal-on-scroll" style="border-top:1px dashed rgba(255,255,255,0.07);padding-top:32px;">
+          <p class="font-jetbrains uppercase" style="font-size:9px;color:rgba(255,255,255,0.22);letter-spacing:0.18em;margin-bottom:20px;">Por que não temos tabela de preços</p>
+          <ul style="display:flex;flex-direction:column;gap:14px;">
+            <li style="display:flex;align-items:flex-start;gap:12px;">
+              <span class="font-jetbrains" style="color:#A2E635;font-size:11px;flex-shrink:0;margin-top:2px;letter-spacing:0;">→</span>
+              <span class="font-space-grotesk font-light" style="font-size:13px;color:rgba(255,255,255,0.42);line-height:1.6;">Volume e complexidade dos processos varia por empresa</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:12px;">
+              <span class="font-jetbrains" style="color:#A2E635;font-size:11px;flex-shrink:0;margin-top:2px;">→</span>
+              <span class="font-space-grotesk font-light" style="font-size:13px;color:rgba(255,255,255,0.42);line-height:1.6;">Integrações existentes afetam diretamente o escopo</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:12px;">
+              <span class="font-jetbrains" style="color:#A2E635;font-size:11px;flex-shrink:0;margin-top:2px;">→</span>
+              <span class="font-space-grotesk font-light" style="font-size:13px;color:rgba(255,255,255,0.42);line-height:1.6;">Cada proposta é construída sobre um diagnóstico real</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:12px;">
+              <span class="font-jetbrains" style="color:#A2E635;font-size:11px;flex-shrink:0;margin-top:2px;">→</span>
+              <span class="font-space-grotesk font-light" style="font-size:13px;color:rgba(255,255,255,0.42);line-height:1.6;">ROI estimado faz parte de toda proposta — sem achismo</span>
+            </li>
+          </ul>
         </div>
-        <a href="mailto:zvisionforb2b@gmail.com" class="w-full bg-[#A2E635] text-black text-center py-3 text-sm font-medium font-space-grotesk hover:bg-[#A2E635]/90 transition-colors mb-8">
-          Solicitar proposta
-        </a>
-        <div class="h-px w-full bg-white/10 mb-6"></div>
-        <ul class="flex flex-col gap-3 mt-auto">
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/70 text-sm font-space-grotesk font-light">Diagnóstico de processos incluso</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/70 text-sm font-space-grotesk font-light">Até 3 automações implementadas</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/70 text-sm font-space-grotesk font-light">CRM + Atendimento automatizado</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/70 text-sm font-space-grotesk font-light">Dashboard de performance</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/70 text-sm font-space-grotesk font-light">Suporte prioritário</span>
-          </li>
-        </ul>
       </div>
 
-      <!-- Plan 3 -->
-      <div class="group bg-[#050506] p-8 flex flex-col hover:bg-white/[0.02] transition-colors reveal-on-scroll">
-        <div class="mb-6">
-          <h3 class="text-white font-medium text-sm uppercase tracking-wider font-space-grotesk mb-1">Escala</h3>
-          <p class="text-white/40 text-xs font-space-grotesk">Para operações que exigem automação em múltiplas frentes</p>
-        </div>
-        <div class="mb-6">
-          <div class="flex items-baseline gap-1">
-            <span class="text-3xl font-light text-white font-space-grotesk tracking-tighter">R$ 2.000</span>
-            <span class="text-white/40 text-sm font-space-grotesk">/mês</span>
+      <!-- ── RIGHT: Elevated CTA card ── -->
+      <div class="col-span-12 md:col-span-5 reveal-on-scroll">
+        <div style="background:#0b0f14;border:1px dashed rgba(255,255,255,0.09);box-shadow:0 0 0 1px rgba(162,230,53,0.06),0 8px 16px rgba(0,0,0,0.3),0 24px 48px rgba(0,0,0,0.4),0 48px 96px rgba(0,0,0,0.3),0 0 80px rgba(162,230,53,0.04);position:relative;overflow:hidden;">
+
+          <!-- Card top lime strip -->
+          <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(162,230,53,0.6) 40%,rgba(162,230,53,0.6) 60%,transparent);"></div>
+
+          <!-- Card header — status bar -->
+          <div style="padding:18px 24px;border-bottom:1px dashed rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:7px;height:7px;border-radius:50%;background:#A2E635;box-shadow:0 0 10px rgba(162,230,53,0.7);flex-shrink:0;"></span>
+              <span class="font-jetbrains uppercase" style="font-size:9px;color:rgba(255,255,255,0.38);letter-spacing:0.16em;">ZVISION IA · ONLINE</span>
+            </div>
+            <span class="font-jetbrains" style="font-size:9px;color:rgba(255,255,255,0.18);">v2.4 · BR</span>
           </div>
-          <p class="text-white/30 text-xs font-jetbrains mt-1">+ taxa de setup</p>
+
+          <!-- Card body -->
+          <div style="padding:28px 24px;">
+
+            <!-- WhatsApp icon tile -->
+            <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(162,230,53,0.07);border:1px dashed rgba(162,230,53,0.22);margin-bottom:20px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#A2E635" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+            </div>
+
+            <p class="font-space-grotesk text-white" style="font-size:19px;font-weight:400;letter-spacing:-0.02em;line-height:1.3;margin-bottom:10px;">Fale com nosso especialista</p>
+            <p class="font-space-grotesk font-light" style="font-size:13px;color:rgba(255,255,255,0.42);line-height:1.65;margin-bottom:28px;">A IA da Zvision atende pelo WhatsApp, entende seu contexto operacional e entrega um diagnóstico inicial em minutos — sem formulário, sem espera.</p>
+
+            <!-- Primary: WhatsApp -->
+            <a href="https://wa.me/5511914961433?text=Olá,%20quero%20conhecer%20as%20soluções%20da%20Zvision" target="_blank" rel="noopener" class="font-space-grotesk font-medium text-black bg-[#A2E635] hover:bg-[#A2E635]/90 transition-all" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:18px 24px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;box-shadow:0 0 28px rgba(162,230,53,0.14);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              Abrir WhatsApp
+            </a>
+
+            <!-- Secondary: email ghost -->
+            <a href="mailto:zvisionforb2b@gmail.com" class="font-space-grotesk font-light hover:text-white transition-colors" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;font-size:11px;color:rgba(255,255,255,0.38);border:1px dashed rgba(255,255,255,0.1);letter-spacing:0.04em;text-transform:uppercase;">
+              Prefiro enviar um e-mail
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+          </div>
+
+          <!-- Card footer: mini KPIs -->
+          <div style="padding:16px 24px;border-top:1px dashed rgba(255,255,255,0.06);display:grid;grid-template-columns:repeat(3,1fr);text-align:center;gap:0;">
+            <div style="padding:4px 0;">
+              <p class="font-space-grotesk font-light text-white" style="font-size:17px;letter-spacing:-0.03em;">34</p>
+              <p class="font-jetbrains uppercase" style="font-size:8px;color:rgba(255,255,255,0.22);letter-spacing:0.14em;margin-top:3px;">Processos</p>
+            </div>
+            <div style="border-left:1px dashed rgba(255,255,255,0.06);border-right:1px dashed rgba(255,255,255,0.06);padding:4px 0;">
+              <p class="font-space-grotesk font-light text-white" style="font-size:17px;letter-spacing:-0.03em;">280h</p>
+              <p class="font-jetbrains uppercase" style="font-size:8px;color:rgba(255,255,255,0.22);letter-spacing:0.14em;margin-top:3px;">Horas / mês</p>
+            </div>
+            <div style="padding:4px 0;">
+              <p class="font-space-grotesk font-light" style="font-size:17px;letter-spacing:-0.03em;color:#A2E635;">99,2%</p>
+              <p class="font-jetbrains uppercase" style="font-size:8px;color:rgba(255,255,255,0.22);letter-spacing:0.14em;margin-top:3px;">SLA</p>
+            </div>
+          </div>
         </div>
-        <a href="mailto:zvisionforb2b@gmail.com" class="w-full border border-white/20 text-white text-center py-3 text-sm font-medium font-space-grotesk hover:border-white/50 hover:bg-white/5 transition-colors mb-8">
-          Falar com especialista
-        </a>
-        <div class="h-px w-full bg-white/10 mb-6"></div>
-        <ul class="flex flex-col gap-3 mt-auto">
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/60 text-sm font-space-grotesk font-light">Tudo do Profissional</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/60 text-sm font-space-grotesk font-light">Automações ilimitadas</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/60 text-sm font-space-grotesk font-light">Gestão completa mensal</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/60 text-sm font-space-grotesk font-light">Reuniões de alinhamento mensais</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[#A2E635] flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span class="text-white/60 text-sm font-space-grotesk font-light">SLA com tempo de resposta garantido</span>
-          </li>
-        </ul>
       </div>
+
     </div>
   </div>
 </section>
@@ -782,10 +836,12 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
       </div>
 
       <div class="relative z-10 px-6 py-16 md:px-12 md:py-20 flex flex-col justify-between min-h-[400px]">
+        <!-- Eyebrow -->
+        <p class="text-sm font-space-grotesk text-black/60 mb-8 reveal-on-scroll">→ Próximo passo</p>
         <!-- Large Email Header -->
-        <a href="mailto:zvisionforb2b@gmail.com" class="group flex items-start justify-between w-full mb-24 md:mb-32 reveal-on-scroll">
+        <a href="mailto:zvisionforb2b@gmail.com" class="group flex items-start justify-between w-full mb-12 reveal-on-scroll">
           <span class="text-4xl sm:text-6xl md:text-8xl lg:text-[7rem] leading-none font-semibold tracking-tighter break-words reveal-on-scroll">
-            Sua operação ainda depende de esforço manual?
+            Sua operação ainda<br>depende de <em class="font-normal not-italic" style="font-style:italic;">esforço manual?</em>
           </span>
           <div class="pt-2 md:pt-6 flex-shrink-0 ml-4">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 md:w-16 md:h-16 transform group-hover:-translate-y-2 group-hover:translate-x-2 transition-transform duration-300">
@@ -859,14 +915,15 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
       </div>
       <!-- Massive Brand Text -->
       <div class="relative z-10 w-full flex justify-center items-end leading-none select-none pt-12">
-        <h1 class="text-[18vw] md:text-[16rem] font-semibold tracking-tighter text-center leading-[0.75] mb-[-0.08em] mix-blend-screen text-white reveal-on-scroll">
+        <h1 class="text-[18vw] md:text-[16rem] font-semibold tracking-tighter text-center leading-[0.75] mb-[-0.08em] reveal-on-scroll" style="background:linear-gradient(180deg,rgba(255,255,255,0.95) 0%,rgba(255,255,255,0.04) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;">
           ZVISION
         </h1>
       </div>
       <!-- Copyright -->
-      <p class="relative z-10 text-center text-xs font-space-grotesk text-white/20 py-6 tracking-wide">
-        © 2025 Zvision Automation. Todos os direitos reservados.
-      </p>
+      <div class="relative z-10 flex justify-between items-center border-t border-dashed border-white/10 px-6 md:px-8 py-5 font-jetbrains text-[10px] text-white/20 tracking-widest uppercase">
+        <span>© 2025 Zvision Automation</span>
+        <span>v2.4 · São Paulo · BR</span>
+      </div>
     </div>
   </div>
 </footer>
@@ -897,12 +954,9 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
   </div>
 </div>
 
-<script>lucide.createIcons();</script>
-
-<!-- GSAP + ScrollTrigger -->
+<!-- GSAP + ScrollTrigger + Lenis — carregados no final do body (não bloqueiam LCP) -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<!-- Lenis smooth scroll -->
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
 
 <script>
@@ -982,17 +1036,6 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
       });
     });
 
-    // ── Pricing cards stagger ────────────────────────────────────────────
-    var pricingGrid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-3');
-    if (pricingGrid) {
-      var pCards = pricingGrid.querySelectorAll('.group');
-      pCards.forEach(function (c) { c.style.opacity = '0'; c.style.transform = 'translateY(20px)'; });
-      gsap.to(pCards, {
-        opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.12,
-        scrollTrigger: { trigger: pricingGrid, start: 'top 86%', once: true },
-      });
-    }
-
     // ── Hero glow: subtle parallax ───────────────────────────────────────
     var heroGlow = document.querySelector('section .absolute[aria-hidden]');
     if (heroGlow) {
@@ -1002,6 +1045,99 @@ body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
         scrollTrigger: { trigger: 'main', start: 'top top', end: '40% top', scrub: 2 },
       });
     }
+  }
+
+  // ── Counter animation — IntersectionObserver (fires fresh on every F5) ──
+  function animateCounter(el) {
+    var target = parseFloat(el.dataset.counter);
+    var suffix = el.dataset.suffix || '';
+    var dur = 1400;
+    var startTs = performance.now();
+    function step(now) {
+      var p = Math.min(1, (now - startTs) / dur);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  var counterObs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        counterObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('[data-counter]').forEach(function (el) {
+    el.textContent = '0';
+    counterObs.observe(el);
+  });
+
+  // ── Dashboard sidebar interactivity ──────────────────────────────────
+  var dashData = {
+    'visao-geral':  ['34',  '2.847', '99,2%'],
+    'automacoes':   ['12',  '1.204', '98,7%'],
+    'integracoes':  ['8',   '642',   '99,8%'],
+    'relatorios':   ['6',   '381',   '100%'],
+    'alertas':      ['2',   '17',    '97,1%'],
+    'config':       ['34',  '2.847', '99,2%'],
+  };
+
+  var dashNav = document.getElementById('dash-nav');
+  if (dashNav) {
+    dashNav.querySelectorAll('.dash-sidebar-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        dashNav.querySelectorAll('.dash-sidebar-btn').forEach(function (b) {
+          b.classList.remove('active');
+        });
+        btn.classList.add('active');
+        var view = btn.dataset.view;
+        var data = dashData[view] || dashData['visao-geral'];
+        var k1 = document.getElementById('dash-kpi-1');
+        var k2 = document.getElementById('dash-kpi-2');
+        var k3 = document.getElementById('dash-kpi-3');
+        if (k1) { k1.style.opacity = '0'; setTimeout(function () { k1.textContent = data[0]; k1.style.opacity = '1'; }, 150); }
+        if (k2) { k2.style.opacity = '0'; setTimeout(function () { k2.textContent = data[1]; k2.style.opacity = '1'; }, 150); }
+        if (k3) { k3.style.opacity = '0'; setTimeout(function () { k3.textContent = data[2]; k3.style.opacity = '1'; }, 150); }
+      });
+    });
+    var kpiStyle = 'transition: opacity 0.15s ease;';
+    ['dash-kpi-1', 'dash-kpi-2', 'dash-kpi-3'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.style.cssText += kpiStyle;
+    });
+  }
+
+  // ── Scroll progress bar ──────────────────────────────────────────────
+  var scrollProgressEl = document.getElementById('scrollProgress');
+  function onScrollProgress() {
+    var y = window.scrollY;
+    var doc = document.documentElement;
+    var max = (doc.scrollHeight - doc.clientHeight) || 1;
+    scrollProgressEl.style.width = Math.min(100, (y / max) * 100) + '%';
+  }
+  document.addEventListener('scroll', onScrollProgress, { passive: true });
+  onScrollProgress();
+
+  // ── Cursor ring — smooth lag loop ────────────────────────────────────
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    var ring = document.getElementById('cursorRing');
+    var rx = 0, ry = 0, tx = 0, ty = 0;
+    document.addEventListener('mousemove', function (e) { tx = e.clientX; ty = e.clientY; });
+    function cursorLoop() {
+      rx += (tx - rx) * 0.18;
+      ry += (ty - ry) * 0.18;
+      ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px) translate(-50%,-50%)';
+      requestAnimationFrame(cursorLoop);
+    }
+    cursorLoop();
+    document.querySelectorAll('a, button, .feature-card, .step, article').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { ring.classList.add('hot'); });
+      el.addEventListener('mouseleave', function () { ring.classList.remove('hot'); });
+    });
   }
 
 }());
