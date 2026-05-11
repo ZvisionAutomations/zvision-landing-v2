@@ -16,7 +16,7 @@
 <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 
 <!-- Lenis CSS (mínimo, necessário para smooth scroll) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.css" integrity="sha384-UuB6deGAnAeGSShmQfNVypuoM4D1q+qgqcc3FRyZPVLuPc4psm5o1VShNhqmootN" crossorigin="anonymous">
 <style>
 body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
 .font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }
@@ -221,8 +221,8 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
   <div class="grid grid-cols-12 h-16 sm:h-20">
     <!-- Left Links -->
     <div class="col-span-4 hidden md:flex items-center">
-      <a href="#" class="flex items-center justify-center hover:bg-white/10 transition-colors border-dashed text-xs font-medium text-white tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">SERVIÇOS</a>
-      <a href="#" class="flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">COMO FUNCIONA</a>
+      <a href="#servicos" class="flex items-center justify-center hover:bg-white/10 transition-colors border-dashed text-xs font-medium text-white tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">SERVIÇOS</a>
+      <a href="#processo" class="flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">COMO FUNCIONA</a>
       <a href="#contato" class="flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">CONTATO</a>
     </div>
     <!-- Mobile Menu -->
@@ -243,8 +243,8 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
     </div>
     <!-- Right Links + CTA -->
     <div class="col-span-2 md:col-span-4 flex items-center justify-end">
-      <a href="#" class="hidden md:flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r border-l pr-8 pl-8">CASOS DE USO</a>
-      <a href="#" class="hidden md:flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">SOBRE</a>
+      <a href="/casos-de-uso" class="hidden md:flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r border-l pr-8 pl-8">CASOS DE USO</a>
+      <a href="/sobre" class="hidden md:flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">SOBRE</a>
       <a href="mailto:zvisionforb2b@gmail.com" class="hidden md:inline-flex items-center gap-2 font-space-grotesk font-medium text-black bg-[#A2E635] hover:bg-[#A2E635]/90 transition-colors mr-4" style="padding:10px 18px;font-size:13px;">
         Falar com especialista
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
@@ -256,7 +256,7 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
 <main>
 
 <!-- ============================================================ HERO ============================================================ -->
-<section class="border-dashed bg-[#050506] border-white/10 border-b pt-24 pb-16 overflow-hidden relative">
+<section id="servicos" class="border-dashed bg-[#050506] border-white/10 border-b pt-24 pb-16 overflow-hidden relative">
   <!-- Glow -->
   <div class="absolute -top-12 left-1/4 w-[500px] h-[300px] bg-[#A2E635]/5 blur-[120px] pointer-events-none" aria-hidden="true"></div>
   <div class="max-w-6xl mx-auto w-full px-6">
@@ -393,11 +393,11 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
         </p>
       </div>
       <div class="flex flex-col gap-3">
-        <a href="#" class="group flex items-center gap-2 text-white/70 font-space-grotesk hover:text-[#A2E635] transition-colors text-sm reveal-on-scroll">
+        <a href="#processo" class="group flex items-center gap-2 text-white/70 font-space-grotesk hover:text-[#A2E635] transition-colors text-sm reveal-on-scroll">
           Ver nossa metodologia
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg>
         </a>
-        <a href="#" class="group flex items-center gap-2 text-white/70 font-space-grotesk hover:text-[#A2E635] transition-colors text-sm reveal-on-scroll">
+        <a href="#servicos" class="group flex items-center gap-2 text-white/70 font-space-grotesk hover:text-[#A2E635] transition-colors text-sm reveal-on-scroll">
           Explorar os serviços
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg>
         </a>
@@ -692,7 +692,7 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
 
 <!-- ============================================================ FALE COM ESPECIALISTA ============================================================ -->
 <!-- WhatsApp: +5511914961433 -->
-<section id="contato" style="position:relative;background:#080c10;border-top:1px dashed rgba(255,255,255,0.1);border-bottom:1px dashed rgba(255,255,255,0.1);overflow:hidden;padding:clamp(80px,10vw,128px) 0;">
+<section id="contato" style="position:relative;background:#080c10;border-top:1px dashed rgba(255,255,255,0.1);border-bottom:1px dashed rgba(255,255,255,0.1);overflow:hidden;padding:clamp(60px,10vw,128px) 0;">
 
   <!-- Lime accent line no topo (signature da seção) -->
   <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(162,230,53,0.5) 25%,rgba(162,230,53,0.85) 50%,rgba(162,230,53,0.5) 75%,transparent 100%);box-shadow:0 0 28px rgba(162,230,53,0.28);pointer-events:none;"></div>
@@ -710,10 +710,10 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
     <div class="grid grid-cols-1 md:grid-cols-12 items-start" style="gap:clamp(48px,6vw,80px);">
 
       <!-- ── LEFT: Copy block ── -->
-      <div class="col-span-12 md:col-span-7">
+      <div class="col-span-12 md:col-span-7 order-2 md:order-1">
 
         <!-- Eyebrow + status pill -->
-        <div class="reveal-on-scroll" style="display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;border-bottom:1px dashed rgba(255,255,255,0.07);margin-bottom:36px;">
+        <div class="reveal-on-scroll" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-bottom:20px;border-bottom:1px dashed rgba(255,255,255,0.07);margin-bottom:36px;">
           <span class="font-jetbrains text-[#A2E635] uppercase" style="font-size:10px;letter-spacing:0.18em;">04 / Contato</span>
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="width:6px;height:6px;border-radius:50%;background:#A2E635;box-shadow:0 0 8px rgba(162,230,53,0.65);animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite;display:inline-block;"></span>
@@ -722,7 +722,7 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
         </div>
 
         <!-- Headline -->
-        <h2 class="font-space-grotesk font-light text-white reveal-on-scroll" style="font-size:clamp(2.8rem,5.5vw,4.2rem);line-height:1.05;letter-spacing:-0.04em;margin-bottom:28px;">
+        <h2 class="font-space-grotesk font-light text-white reveal-on-scroll" style="font-size:clamp(2rem,5.5vw,4.2rem);line-height:1.08;letter-spacing:-0.04em;margin-bottom:28px;">
           Cada projeto<br>é <em>único.</em><br>O seu também.
         </h2>
 
@@ -755,7 +755,7 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
       </div>
 
       <!-- ── RIGHT: Elevated CTA card ── -->
-      <div class="col-span-12 md:col-span-5 reveal-on-scroll">
+      <div class="col-span-12 md:col-span-5 reveal-on-scroll order-1 md:order-2">
         <div style="background:#0b0f14;border:1px dashed rgba(255,255,255,0.09);box-shadow:0 0 0 1px rgba(162,230,53,0.06),0 8px 16px rgba(0,0,0,0.3),0 24px 48px rgba(0,0,0,0.4),0 48px 96px rgba(0,0,0,0.3),0 0 80px rgba(162,230,53,0.04);position:relative;overflow:hidden;">
 
           <!-- Card top lime strip -->
@@ -784,7 +784,7 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
             <p class="font-space-grotesk font-light" style="font-size:13px;color:rgba(255,255,255,0.42);line-height:1.65;margin-bottom:28px;">A IA da Zvision atende pelo WhatsApp, entende seu contexto operacional e entrega um diagnóstico inicial em minutos — sem formulário, sem espera.</p>
 
             <!-- Primary: WhatsApp -->
-            <a href="https://wa.me/5511914961433?text=Olá,%20quero%20conhecer%20as%20soluções%20da%20Zvision" target="_blank" rel="noopener" class="font-space-grotesk font-medium text-black bg-[#A2E635] hover:bg-[#A2E635]/90 transition-all" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:18px 24px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;box-shadow:0 0 28px rgba(162,230,53,0.14);">
+            <a href="https://wa.me/5511914961433?text=Olá,%20quero%20conhecer%20as%20soluções%20da%20Zvision" target="_blank" rel="noopener noreferrer" class="font-space-grotesk font-medium text-black bg-[#A2E635] hover:bg-[#A2E635]/90 transition-all" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:18px 24px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;box-shadow:0 0 28px rgba(162,230,53,0.14);">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
               </svg>
@@ -873,22 +873,22 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
           <div class="flex flex-col gap-4">
             <span class="block text-black/50 font-semibold tracking-tight reveal-on-scroll">Serviços</span>
             <div class="flex flex-col gap-2">
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Diagnóstico de Processos</a>
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Automação de Atendimento</a>
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Automação de Vendas e CRM</a>
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Integração de Sistemas</a>
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Dashboards Automatizados</a>
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Gestão Mensal</a>
+              <a href="#contato" class="hover:text-black/60 transition-colors reveal-on-scroll">Diagnóstico de Processos</a>
+              <a href="#contato" class="hover:text-black/60 transition-colors reveal-on-scroll">Automação de Atendimento</a>
+              <a href="#contato" class="hover:text-black/60 transition-colors reveal-on-scroll">Automação de Vendas e CRM</a>
+              <a href="#contato" class="hover:text-black/60 transition-colors reveal-on-scroll">Integração de Sistemas</a>
+              <a href="#contato" class="hover:text-black/60 transition-colors reveal-on-scroll">Dashboards Automatizados</a>
+              <a href="#contato" class="hover:text-black/60 transition-colors reveal-on-scroll">Gestão Mensal</a>
             </div>
           </div>
           <!-- Col 3: Empresa -->
           <div class="flex flex-col gap-4">
             <span class="block text-black/50 font-semibold tracking-tight reveal-on-scroll">Empresa</span>
             <div class="flex flex-col gap-2">
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Sobre a Zvision</a>
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Como Funciona</a>
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Casos de Uso</a>
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Blog</a>
+              <a href="/sobre" class="hover:text-black/60 transition-colors reveal-on-scroll">Sobre a Zvision</a>
+              <a href="#processo" class="hover:text-black/60 transition-colors reveal-on-scroll">Como Funciona</a>
+              <a href="/casos-de-uso" class="hover:text-black/60 transition-colors reveal-on-scroll">Casos de Uso</a>
+              <a href="/blog" class="hover:text-black/60 transition-colors reveal-on-scroll">Blog</a>
               <a href="mailto:zvisionforb2b@gmail.com" class="hover:text-black/60 transition-colors reveal-on-scroll">Falar com Especialista</a>
             </div>
           </div>
@@ -896,8 +896,8 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
           <div class="flex flex-col gap-4">
             <span class="block text-black/50 font-semibold tracking-tight reveal-on-scroll">Legal</span>
             <div class="flex flex-col gap-2">
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Política de Privacidade</a>
-              <a href="#" class="hover:text-black/60 transition-colors reveal-on-scroll">Termos de Uso</a>
+              <a href="/privacidade" class="hover:text-black/60 transition-colors reveal-on-scroll">Política de Privacidade</a>
+              <a href="/termos" class="hover:text-black/60 transition-colors reveal-on-scroll">Termos de Uso</a>
             </div>
           </div>
         </div>
@@ -940,11 +940,11 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
     </button>
   </div>
   <nav class="flex flex-col flex-1 justify-center px-8 gap-2">
-    <a href="#" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Serviços</a>
+    <a href="#servicos" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Serviços</a>
     <a href="#processo" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Como Funciona</a>
-    <a href="#" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Preços</a>
-    <a href="#" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Casos de Uso</a>
-    <a href="#" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Sobre</a>
+    <a href="#contato" onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Preços</a>
+    <a href="/casos-de-uso" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Casos de Uso</a>
+    <a href="/sobre" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Sobre</a>
   </nav>
   <div class="px-8 pb-10">
     <a href="mailto:zvisionforb2b@gmail.com" class="flex items-center justify-center gap-2 bg-[#A2E635] text-black font-medium font-space-grotesk text-sm tracking-wide px-6 py-4 hover:bg-[#A2E635]/90 transition-colors w-full">
@@ -955,9 +955,9 @@ section:not(:first-of-type) { content-visibility: auto; contain-intrinsic-size: 
 </div>
 
 <!-- GSAP + ScrollTrigger + Lenis — carregados no final do body (não bloqueiam LCP) -->
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js" integrity="sha384-eD5ubmuCcvTdCADWuSchJYE7wcj2nzNr0itbrh6w/KJyBiltSZ8w3VFRBSWu5YQ8" crossorigin="anonymous"></script>
 
 <script>
 (function () {

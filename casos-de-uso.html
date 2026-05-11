@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casos de Uso — Zvision Automation</title>
+<meta name="description" content="Veja como a Zvision automatiza processos em atendimento, vendas, financeiro, operações e mais. Exemplos reais de automação com IA.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" onload="this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<style>
+body { font-family: 'Space Grotesk', sans-serif; background-color: #050506; }
+.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }
+.font-jetbrains     { font-family: 'JetBrains Mono', monospace !important; }
+@keyframes reveal { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.reveal-on-scroll { animation: reveal 0.7s cubic-bezier(0.2,0.8,0.2,1) both; animation-play-state: paused; }
+.reveal-on-scroll.is-visible { animation-play-state: running; }
+.use-case-card { transition: background 0.2s ease, border-color 0.2s ease; }
+.use-case-card:hover { background: rgba(162,230,53,0.03); border-color: rgba(162,230,53,0.2) !important; }
+</style>
+</head>
+<body class="bg-[#050506] min-h-screen flex flex-col overflow-x-hidden text-white/70">
+
+<!-- NAV -->
+<header class="border-dashed sticky z-50 bg-[#000000] w-full top-0 backdrop-blur-md border-b border-white/10">
+  <div class="grid grid-cols-12 h-16 sm:h-20">
+    <div class="col-span-4 hidden md:flex items-center">
+      <a href="/#servicos"  class="flex items-center justify-center hover:bg-white/10 transition-colors border-dashed text-xs font-medium text-white tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">SERVIÇOS</a>
+      <a href="/#processo"  class="flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">COMO FUNCIONA</a>
+      <a href="/#contato"   class="flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">CONTATO</a>
+    </div>
+    <div class="col-span-2 md:hidden flex items-center pl-6 border-r border-dashed border-white/10 cursor-pointer" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-white"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+    </div>
+    <div class="col-span-8 md:col-span-4 flex relative items-center justify-center">
+      <a href="/" class="flex items-center gap-2.5">
+        <svg width="28" height="28" viewBox="0 0 2085 2085" xmlns="http://www.w3.org/2000/svg"><g fill="#A2E635"><path d="M753.37 1579.84 c-27.49 -20.16 -59.86 -44.18 -72.28 -53.35 -12.22 -9.16 -56.20 -41.13 -97.73 -71.26 -41.33 -29.93 -76.56 -56.20 -77.78 -58.03 -2.04 -2.44 -2.65 -32.58 -2.65 -133.98 l0 -130.72 37.26 -27.28 c20.36 -15.27 99.36 -73.10 175.51 -128.89 76.15 -55.79 167.37 -122.58 202.60 -148.64 35.23 -25.86 70.04 -51.11 77.17 -55.99 18.33 -12.22 43.98 -23.82 66.99 -30.13 l19.75 -5.50 153.73 -0.41 c146.19 -0.61 153.52 -0.41 149.04 3.05 -2.65 1.83 -15.88 12.22 -29.52 23.01 -13.64 10.59 -27.49 21.18 -30.95 23.42 -5.90 3.67 -24.64 17.71 -63.73 47.44 -10.18 7.94 -19.14 14.46 -19.75 14.46 -0.61 0 -10.18 7.33 -21.18 16.29 -11.20 8.96 -21.18 16.29 -21.99 16.29 -0.81 0 -8.14 5.29 -16.09 11.81 -7.94 6.31 -19.55 15.27 -26.06 19.75 -6.31 4.48 -26.88 19.55 -45.41 33.60 -44.79 33.80 -61.69 46.42 -80.02 59.86 -8.35 6.11 -23.42 17.51 -33.60 25.25 -9.98 7.74 -24.03 18.12 -30.75 23.01 -6.92 4.89 -18.94 13.64 -26.47 19.55 -7.74 5.90 -19.34 14.66 -25.86 19.34 -6.31 4.89 -17.31 13.03 -24.43 18.33 -6.92 5.29 -15.88 12.01 -19.75 14.86 -3.87 3.05 -19.55 14.66 -34.61 26.06 -15.07 11.40 -28.91 21.79 -30.75 22.80 -4.07 2.44 -24.23 17.51 -47.65 35.63 -9.37 7.33 -20.36 15.47 -24.43 18.33 -4.07 2.85 -17.92 13.44 -31.15 23.42 -13.03 10.18 -28.51 21.58 -34.21 25.45 -8.55 5.90 -37.26 27.08 -78.59 58.44 -4.28 3.05 -11.20 8.14 -15.27 11.40 -4.28 3.05 -15.07 11.40 -24.23 18.33 -8.96 6.92 -21.58 16.09 -27.90 20.36 -6.31 4.28 -12.01 8.55 -12.62 9.57 -0.81 1.43 120.95 2.04 346.55 2.04 227.64 0 352.25 0.81 361.01 2.04 38.28 6.11 75.95 26.06 100.79 53.35 23.21 25.66 37.87 57.01 55.99 119.32 6.72 23.01 12.22 42.56 12.22 43.37 0 1.02 -130.72 1.83 -290.56 1.83 l-290.76 -0.20 -49.89 -36.65z"/><path d="M699.41 1345.88 c1.22 -1.83 82.26 -62.92 266.73 -200.56 40.32 -30.13 127.87 -95.49 194.45 -145.38 66.58 -49.68 151.90 -113.41 189.36 -141.31 37.46 -28.10 104.25 -77.98 148.43 -111.17 l80.43 -60.27 -357.34 -1.02 c-403.36 -1.22 -363.86 0.61 -401.93 -18.12 -43.17 -21.38 -72.08 -55.18 -90.81 -106.08 -10.79 -29.93 -28.10 -92.44 -26.06 -94.68 1.43 -1.43 100.99 -2.24 288.72 -2.65 l286.69 -0.61 58.84 43.17 c68.01 50.09 148.03 108.32 203.61 148.84 l38.89 28.10 1.43 19.14 c0.61 10.59 1.22 70.25 1.22 132.76 l-0.20 113.41 -5.90 5.50 c-3.46 3.26 -10.38 8.55 -15.68 12.01 -5.29 3.46 -15.47 11 -22.80 16.49 -7.33 5.70 -25.66 19.34 -40.32 30.13 -14.86 10.79 -29.32 21.58 -32.37 23.82 -3.05 2.24 -7.53 5.50 -10.18 7.13 -2.44 1.63 -8.55 6.11 -13.44 9.77 -4.89 3.67 -17.92 13.44 -29.12 21.79 -11.20 8.35 -23.62 17.51 -27.49 20.36 -3.87 3.05 -16.09 12.01 -26.88 19.95 -10.79 8.14 -22.19 16.49 -25.25 18.73 -2.85 2.24 -7.53 5.50 -9.98 7.13 -2.65 1.63 -13.44 9.77 -24.23 17.92 -10.59 7.94 -19.95 14.66 -20.77 14.66 -0.61 0 -8.14 5.50 -16.70 12.42 -8.35 6.72 -17.71 13.85 -20.56 15.68 -2.85 1.83 -9.37 6.52 -14.46 10.59 -5.09 4.07 -11.40 8.76 -14.25 10.59 -2.85 1.83 -9.98 6.92 -15.68 11.20 -5.90 4.28 -19.55 14.25 -30.34 21.99 -10.79 7.94 -26.27 19.55 -34.41 26.06 -8.14 6.31 -15.47 11.61 -16.29 11.61 -0.81 0 -5.09 3.26 -9.77 7.13 -4.48 3.87 -9.16 7.13 -10.18 7.13 -1.02 0 -6.52 3.26 -12.01 7.33 -12.22 8.55 -39.30 20.16 -61.69 25.86 -15.68 4.07 -22.40 4.28 -169.61 4.89 -106.49 0.61 -153.12 0.20 -152.10 -1.43z"/></g></svg>
+        <span class="text-white font-semibold text-sm tracking-widest font-space-grotesk uppercase">Zvision</span>
+      </a>
+    </div>
+    <div class="col-span-2 md:col-span-4 flex items-center justify-end">
+      <a href="/casos-de-uso" class="hidden md:flex items-center justify-center bg-white/5 text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r border-l pr-8 pl-8">CASOS DE USO</a>
+      <a href="/sobre"        class="hidden md:flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors border-dashed text-xs font-medium tracking-wide font-space-grotesk h-full border-white/10 border-r pr-8 pl-8">SOBRE</a>
+      <a href="mailto:zvisionforb2b@gmail.com" class="hidden md:inline-flex items-center gap-2 font-space-grotesk font-medium text-black bg-[#A2E635] hover:bg-[#A2E635]/90 transition-colors mr-4" style="padding:10px 18px;font-size:13px;">
+        Falar com especialista
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="flex-1">
+
+<!-- HERO -->
+<section class="border-b border-dashed border-white/10 pt-24 pb-20 relative overflow-hidden">
+  <div class="absolute top-0 left-1/3 w-[600px] h-[300px] bg-[#A2E635]/4 blur-[140px] pointer-events-none"></div>
+  <div class="max-w-6xl mx-auto px-6 relative z-10">
+    <span class="font-jetbrains text-[#A2E635] uppercase text-xs tracking-widest reveal-on-scroll">Casos de Uso</span>
+    <h1 class="font-space-grotesk font-light text-white mt-6 mb-8 reveal-on-scroll" style="font-size:clamp(2.4rem,5vw,4rem);line-height:1.08;letter-spacing:-0.04em;">
+      Processos que podem<br><em>rodar sozinhos</em> agora.
+    </h1>
+    <p class="font-space-grotesk font-light text-white/55 max-w-xl reveal-on-scroll" style="font-size:clamp(15px,1.4vw,18px);line-height:1.75;">
+      Cada empresa tem uma combinação única de processos manuais. Aqui estão os mais comuns que automatizamos — e os resultados típicos que entregamos.
+    </p>
+  </div>
+</section>
+
+<!-- CASOS -->
+<section class="py-20">
+  <div class="max-w-6xl mx-auto px-6">
+
+    <!-- Atendimento -->
+    <div class="mb-20">
+      <div class="flex items-center gap-4 mb-8 reveal-on-scroll">
+        <span class="font-jetbrains text-[#A2E635] uppercase text-xs tracking-widest">Atendimento ao Cliente</span>
+        <div class="h-px flex-1 bg-white/8"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Triagem automática de WhatsApp</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">IA lê a mensagem, identifica a intenção e roteia para o setor certo — ou resolve direto. Tempo de resposta: segundos.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">-80% tempo de triagem</span>
+          </div>
+        </div>
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Respostas a perguntas frequentes</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">Base de conhecimento treinada com os dados da sua empresa. Responde com a voz da sua marca, 24/7, sem agente humano.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">70% tickets resolvidos</span>
+          </div>
+        </div>
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Follow-up automático pós-venda</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">Sequência de mensagens personalizada após cada compra ou contrato assinado. NPS, onboarding e retenção no piloto automático.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">+35% NPS médio</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vendas -->
+    <div class="mb-20">
+      <div class="flex items-center gap-4 mb-8 reveal-on-scroll">
+        <span class="font-jetbrains text-[#A2E635] uppercase text-xs tracking-widest">Vendas e CRM</span>
+        <div class="h-px flex-1 bg-white/8"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Qualificação automática de leads</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">IA faz as perguntas certas via WhatsApp ou e-mail, qualifica o lead e alimenta o CRM com as informações estruturadas — sem SDR.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">3x mais leads qualificados</span>
+          </div>
+        </div>
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Atualização automática de CRM</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">Cada interação do time de vendas é capturada e registrada no CRM automaticamente. Fim dos updates manuais que nunca acontecem.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">100% dados atualizados</span>
+          </div>
+        </div>
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Propostas e contratos automáticos</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">Geração de proposta personalizada a partir do briefing do cliente. Contrato gerado e enviado para assinatura digital em minutos.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">De dias para minutos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Financeiro -->
+    <div class="mb-20">
+      <div class="flex items-center gap-4 mb-8 reveal-on-scroll">
+        <span class="font-jetbrains text-[#A2E635] uppercase text-xs tracking-widest">Financeiro e Operações</span>
+        <div class="h-px flex-1 bg-white/8"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Conciliação financeira automática</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">Leitura de extratos, notas fiscais e faturas. Conciliação contra o ERP e flag de divergências — sem planilha manual.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">-90% tempo de conciliação</span>
+          </div>
+        </div>
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Relatórios gerenciais automatizados</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">Dashboard e relatório executivo gerado e enviado automaticamente toda segunda-feira às 8h — com dados do dia anterior.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">Zero trabalho manual</span>
+          </div>
+        </div>
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Cobrança automática de inadimplentes</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">Fluxo de cobrança inteligente por WhatsApp e e-mail, com escalada automática e registro de resposta no ERP.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">+45% taxa de recuperação</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RH / Onboarding -->
+    <div class="mb-20">
+      <div class="flex items-center gap-4 mb-8 reveal-on-scroll">
+        <span class="font-jetbrains text-[#A2E635] uppercase text-xs tracking-widest">RH e Onboarding</span>
+        <div class="h-px flex-1 bg-white/8"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Onboarding de colaboradores</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">Envio automático de documentos, acessos, vídeos de treinamento e checklists para novos colaboradores assim que o contrato é assinado.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">Onboarding em 1 dia</span>
+          </div>
+        </div>
+        <div class="use-case-card border border-dashed border-white/10 p-7 reveal-on-scroll">
+          <p class="font-space-grotesk text-white font-medium mb-3" style="font-size:15px;letter-spacing:-0.01em;">Triagem de currículos e agendamento</p>
+          <p class="font-space-grotesk font-light text-white/42 mb-5" style="font-size:13px;line-height:1.7;">IA lê, pontua e filtra currículos. Candidatos aprovados recebem link de agendamento automático. RH foca nas entrevistas que importam.</p>
+          <div class="flex items-center gap-2">
+            <span class="font-jetbrains text-[#A2E635] text-xs">→</span>
+            <span class="font-jetbrains text-white/28 uppercase text-xs tracking-wider">-60% tempo de triagem</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="border-t border-dashed border-white/10 py-24 bg-[#080c10] relative overflow-hidden">
+  <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-[#A2E635]/4 blur-[120px] pointer-events-none"></div>
+  <div class="max-w-6xl mx-auto px-6 text-center relative z-10">
+    <span class="font-jetbrains text-[#A2E635] uppercase text-xs tracking-widest reveal-on-scroll">Seu processo está aqui?</span>
+    <h2 class="font-space-grotesk font-light text-white mt-5 mb-6 reveal-on-scroll" style="font-size:clamp(2rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;">
+      Fale com nossa IA e descubra<br>o que pode ser automatizado.
+    </h2>
+    <p class="font-space-grotesk font-light text-white/45 mb-10 reveal-on-scroll" style="font-size:15px;line-height:1.7;max-width:440px;margin-left:auto;margin-right:auto;">
+      Diagnóstico gratuito. Sem compromisso. Em minutos você tem uma visão real do que pode mudar na sua operação.
+    </p>
+    <a href="https://wa.me/5511914961433?text=Olá,%20quero%20um%20diagnóstico%20de%20automação%20para%20minha%20operação" target="_blank" rel="noopener noreferrer"
+       class="inline-flex items-center gap-2 bg-[#A2E635] text-black font-medium font-space-grotesk hover:bg-[#A2E635]/90 transition-colors reveal-on-scroll"
+       style="padding:18px 32px;font-size:13px;letter-spacing:0.04em;">
+      Solicitar diagnóstico gratuito
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<footer class="border-t border-dashed border-white/10 py-10 bg-[#050506]">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+    <a href="/" class="flex items-center gap-2">
+      <svg width="20" height="20" viewBox="0 0 2085 2085" xmlns="http://www.w3.org/2000/svg"><g fill="#A2E635"><path d="M753.37 1579.84 c-27.49 -20.16 -59.86 -44.18 -72.28 -53.35 -12.22 -9.16 -56.20 -41.13 -97.73 -71.26 -41.33 -29.93 -76.56 -56.20 -77.78 -58.03 -2.04 -2.44 -2.65 -32.58 -2.65 -133.98 l0 -130.72 37.26 -27.28 c20.36 -15.27 99.36 -73.10 175.51 -128.89 76.15 -55.79 167.37 -122.58 202.60 -148.64 35.23 -25.86 70.04 -51.11 77.17 -55.99 18.33 -12.22 43.98 -23.82 66.99 -30.13 l19.75 -5.50 153.73 -0.41 c146.19 -0.61 153.52 -0.41 149.04 3.05 -2.65 1.83 -15.88 12.22 -29.52 23.01 -13.64 10.59 -27.49 21.18 -30.95 23.42 -5.90 3.67 -24.64 17.71 -63.73 47.44 -10.18 7.94 -19.14 14.46 -19.75 14.46 -0.61 0 -10.18 7.33 -21.18 16.29 -11.20 8.96 -21.18 16.29 -21.99 16.29 -0.81 0 -8.14 5.29 -16.09 11.81 -7.94 6.31 -19.55 15.27 -26.06 19.75 -6.31 4.48 -26.88 19.55 -45.41 33.60 -44.79 33.80 -61.69 46.42 -80.02 59.86 -8.35 6.11 -23.42 17.51 -33.60 25.25 -9.98 7.74 -24.03 18.12 -30.75 23.01 -6.92 4.89 -18.94 13.64 -26.47 19.55 -7.74 5.90 -19.34 14.66 -25.86 19.34 -6.31 4.89 -17.31 13.03 -24.43 18.33 -6.92 5.29 -15.88 12.01 -19.75 14.86 -3.87 3.05 -19.55 14.66 -34.61 26.06 -15.07 11.40 -28.91 21.79 -30.75 22.80 -4.07 2.44 -24.23 17.51 -47.65 35.63 -9.37 7.33 -20.36 15.47 -24.43 18.33 -4.07 2.85 -17.92 13.44 -31.15 23.42 -13.03 10.18 -28.51 21.58 -34.21 25.45 -8.55 5.90 -37.26 27.08 -78.59 58.44 -4.28 3.05 -11.20 8.14 -15.27 11.40 -4.28 3.05 -15.07 11.40 -24.23 18.33 -8.96 6.92 -21.58 16.09 -27.90 20.36 -6.31 4.28 -12.01 8.55 -12.62 9.57 -0.81 1.43 120.95 2.04 346.55 2.04 227.64 0 352.25 0.81 361.01 2.04 38.28 6.11 75.95 26.06 100.79 53.35 23.21 25.66 37.87 57.01 55.99 119.32 6.72 23.01 12.22 42.56 12.22 43.37 0 1.02 -130.72 1.83 -290.56 1.83 l-290.76 -0.20 -49.89 -36.65z"/></g></svg>
+      <span class="text-white/50 font-space-grotesk text-xs font-medium tracking-widest uppercase">Zvision</span>
+    </a>
+    <div class="flex items-center gap-6 font-jetbrains text-xs text-white/25 uppercase tracking-widest">
+      <a href="/privacidade" class="hover:text-white/50 transition-colors">Privacidade</a>
+      <a href="/termos" class="hover:text-white/50 transition-colors">Termos</a>
+      <span>© 2025 Zvision Automation</span>
+    </div>
+  </div>
+</footer>
+
+<div id="mobileMenu" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col md:hidden">
+  <div class="flex items-center justify-between px-6 py-5 border-b border-dashed border-white/10">
+    <a href="/" class="flex items-center gap-2.5">
+      <svg width="22" height="22" viewBox="0 0 2085 2085" xmlns="http://www.w3.org/2000/svg"><g fill="#A2E635"><path d="M753.37 1579.84 c-27.49 -20.16 -59.86 -44.18 -72.28 -53.35 -12.22 -9.16 -56.20 -41.13 -97.73 -71.26 -41.33 -29.93 -76.56 -56.20 -77.78 -58.03 -2.04 -2.44 -2.65 -32.58 -2.65 -133.98 l0 -130.72 37.26 -27.28 c20.36 -15.27 99.36 -73.10 175.51 -128.89 76.15 -55.79 167.37 -122.58 202.60 -148.64 35.23 -25.86 70.04 -51.11 77.17 -55.99 18.33 -12.22 43.98 -23.82 66.99 -30.13 l19.75 -5.50 153.73 -0.41 c146.19 -0.61 153.52 -0.41 149.04 3.05 -2.65 1.83 -15.88 12.22 -29.52 23.01 -13.64 10.59 -27.49 21.18 -30.95 23.42 -5.90 3.67 -24.64 17.71 -63.73 47.44 -10.18 7.94 -19.14 14.46 -19.75 14.46 -0.61 0 -10.18 7.33 -21.18 16.29 -11.20 8.96 -21.18 16.29 -21.99 16.29 -0.81 0 -8.14 5.29 -16.09 11.81 -7.94 6.31 -19.55 15.27 -26.06 19.75 -6.31 4.48 -26.88 19.55 -45.41 33.60 -44.79 33.80 -61.69 46.42 -80.02 59.86 -8.35 6.11 -23.42 17.51 -33.60 25.25 -9.98 7.74 -24.03 18.12 -30.75 23.01 -6.92 4.89 -18.94 13.64 -26.47 19.55 -7.74 5.90 -19.34 14.66 -25.86 19.34 -6.31 4.89 -17.31 13.03 -24.43 18.33 -6.92 5.29 -15.88 12.01 -19.75 14.86 -3.87 3.05 -19.55 14.66 -34.61 26.06 -15.07 11.40 -28.91 21.79 -30.75 22.80 -4.07 2.44 -24.23 17.51 -47.65 35.63 -9.37 7.33 -20.36 15.47 -24.43 18.33 -4.07 2.85 -17.92 13.44 -31.15 23.42 -13.03 10.18 -28.51 21.58 -34.21 25.45 -8.55 5.90 -37.26 27.08 -78.59 58.44 -4.28 3.05 -11.20 8.14 -15.27 11.40 -4.28 3.05 -15.07 11.40 -24.23 18.33 -8.96 6.92 -21.58 16.09 -27.90 20.36 -6.31 4.28 -12.01 8.55 -12.62 9.57 -0.81 1.43 120.95 2.04 346.55 2.04 227.64 0 352.25 0.81 361.01 2.04 38.28 6.11 75.95 26.06 100.79 53.35 23.21 25.66 37.87 57.01 55.99 119.32 6.72 23.01 12.22 42.56 12.22 43.37 0 1.02 -130.72 1.83 -290.56 1.83 l-290.76 -0.20 -49.89 -36.65z"/></g></svg>
+      <span class="text-white font-semibold text-sm tracking-widest font-space-grotesk uppercase">Zvision</span>
+    </a>
+    <button onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-white/60 hover:text-white p-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <nav class="flex flex-col flex-1 justify-center px-8 gap-2">
+    <a href="/#servicos"     onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Serviços</a>
+    <a href="/#processo"     onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Como Funciona</a>
+    <a href="/casos-de-uso"  class="text-xl text-[#A2E635] font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10">Casos de Uso</a>
+    <a href="/sobre"         class="text-xl text-white/70 font-space-grotesk tracking-widest uppercase py-4 border-b border-dashed border-white/10 hover:text-[#A2E635] transition-colors">Sobre</a>
+  </nav>
+  <div class="px-8 pb-10">
+    <a href="mailto:zvisionforb2b@gmail.com" class="flex items-center justify-center gap-2 bg-[#A2E635] text-black font-medium font-space-grotesk text-sm tracking-wide px-6 py-4 w-full">
+      Falar com Especialista
+    </a>
+  </div>
+</div>
+
+<script>
+(function() {
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal-on-scroll').forEach(function(el) { io.observe(el); });
+}());
+</script>
+</body>
+</html>
